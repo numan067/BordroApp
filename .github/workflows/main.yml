@@ -3,8 +3,6 @@ name: Android APK Build
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   build:
@@ -20,17 +18,14 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Gradle Kur
-      uses: gradle/actions/setup-gradle@v3
+    - name: Gradle Kur ve APK Derle
+      uses: gradle/gradle-build-action@v3
       with:
         gradle-version: 8.1.1
-
-    - name: APK Derle
-      # Projende gradlew olmadığı için kurduğumuz gradle ile derliyoruz
-      run: gradle assembleDebug
+        arguments: assembleDebug
 
     - name: APK Dosyasini Yukle
       uses: actions/upload-artifact@v4
       with:
-        name: BordroApp-Yukle
+        name: BordroApp-APK
         path: app/build/outputs/apk/debug/app-debug.apk
