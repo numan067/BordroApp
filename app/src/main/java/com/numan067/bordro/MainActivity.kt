@@ -10,13 +10,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Butonları Tanımlıyoruz
         val btnMaas = findViewById<Button>(R.id.btnMaas)
         val btnFark = findViewById<Button>(R.id.btnFark)
         val btnSosyal = findViewById<Button>(R.id.btnSosyal)
         val btnEnflasyon = findViewById<Button>(R.id.btnEnflasyon)
 
-        // Tıklama Olayları
         btnMaas.setOnClickListener {
             Toast.makeText(this, "Maaş Hesaplama Ekranı Hazırlanıyor...", Toast.LENGTH_SHORT).show()
         }
