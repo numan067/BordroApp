@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.numan067.bordro.R // Bu satır hatayı düzeltecek olan kritik satır
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,19 +16,16 @@ class MainActivity : AppCompatActivity() {
         val btnEnflasyon = findViewById<Button>(R.id.btnEnflasyon)
 
         btnMaas.setOnClickListener {
-            Toast.makeText(this, "Maaş Hesaplama Ekranı Hazırlanıyor...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Maaş Hesaplama Hazırlanıyor", Toast.LENGTH_SHORT).show()
         }
-
         btnFark.setOnClickListener {
-            Toast.makeText(this, "Fark Hesaplama Ekranı Hazırlanıyor...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Fark Hesaplama Hazırlanıyor", Toast.LENGTH_SHORT).show()
         }
-
         btnSosyal.setOnClickListener {
-            Toast.makeText(this, "Sosyal Haklar Ekranı Hazırlanıyor...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Sosyal Haklar Hazırlanıyor", Toast.LENGTH_SHORT).show()
         }
-
         btnEnflasyon.setOnClickListener {
-            Toast.makeText(this, "Bileşik Enflasyon Ekranı Hazırlanıyor...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Enflasyon Hesaplama Hazırlanıyor", Toast.LENGTH_SHORT).show()
         }
     }
 }
