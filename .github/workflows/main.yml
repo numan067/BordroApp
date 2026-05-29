@@ -1,0 +1,38 @@
+name: Android APK Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Kodu Cek
+      uses: actions/checkout@v4
+
+    - name: Java 17 Kur
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Gradle Sistemini Hazirla
+      # Projende eksik olan gradlew dosyalarini GitHub burada otomatik olusturur
+      run: gradle wrapper --gradle-version 8.1.1
+
+    - name: Calistirma Izni Ver
+      run: chmod +x gradlew
+
+    - name: APK Dosyasini Derle
+      run: ./gradlew assembleDebug
+
+    - name: APK Dosyasini Yukle
+      uses: actions/upload-artifact@v4
+      with:
+        name: BordroApp-Yukle
+        path: app/build/outputs/apk/debug/app-debug.apk
