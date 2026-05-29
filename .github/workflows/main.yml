@@ -1,5 +1,5 @@
 name: Android APK Build
-on: [push]
+on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,8 +11,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Setup Gradle
+        # Bu adım Gradle'ı sistemine otomatik olarak kurar
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.1.1
+
       - name: Build with Gradle
-        # gradlew olmadigi icin sistemdeki gradle'i direkt kullaniyoruz
+        # Artık 'gradle' komutu çalışacaktır
         run: gradle assembleDebug
 
       - name: Upload APK
