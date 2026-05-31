@@ -8,10 +8,22 @@
 </head>
 <body>
 
+    <!-- GÜNCELLEME UYARI PENCERESİ (MODAL) -->
+    <div id="update-modal" class="update-modal-overlay hidden">
+        <div class="update-modal-content">
+            <h3>🚀 Yeni Güncelleme Var!</h3>
+            <p>BordroApp uygulamasının yeni bir sürümü yayınlandı. Yeni özellikleri kullanmak için lütfen güncelleyin.</p>
+            <div class="update-modal-buttons">
+                <button class="btn btn-purple" onclick="redirectToUpdate()">Şimdi Güncelle</button>
+                <button class="btn btn-secondary" onclick="closeUpdateModal()">Daha Sonra</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ANA İÇERİK ALANI -->
     <main class="app-content">
 
-        <!-- SEKME 1: MAAŞ HESAPLAMA (BİREBİR EKRAN GÖRÜNTÜSÜ KLONU) -->
+        <!-- SEKME 1: MAAŞ HESAPLAMA -->
         <section id="tab-salary" class="tab-panel active">
             <header class="app-header-title">
                 <h1>Maaş Hesaplama 2026</h1>
@@ -100,7 +112,6 @@
                     <input type="number" id="transport-gross" value="0" oninput="calculateBordro()">
                 </div>
 
-                <!-- ALTTTAKİ DÖRT GÖSTERGE KUTUSU (GÖRSEL KLON) -->
                 <div class="indicator-grid">
                     <div class="ind-box">
                         <span class="ind-title">VERGİ İSTİNASI</span>
@@ -120,7 +131,6 @@
                     </div>
                 </div>
 
-                <!-- BÜYÜK MOR BANNER HAKEDİŞ BUTONU -->
                 <div class="purple-net-banner">
                     <span class="banner-title">Ödenecek Net Maaş</span>
                     <span class="banner-value" id="res-net-salary">0,00 TL</span>
@@ -128,7 +138,7 @@
             </div>
         </section>
 
-        <!-- SEKME 2: SOSYAL HAKLAR DUYURU VE KILAVUZU -->
+        <!-- SEKME 2: SOSYAL HAKLAR -->
         <section id="tab-benefits" class="tab-panel">
             <header class="app-header-title">
                 <h1>Sosyal Haklar Rehberi</h1>
@@ -230,7 +240,6 @@
 
                 <h3 style="margin-top: 20px; font-size: 0.95rem; color: #475569; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">Gönderilen Mesajlar</h3>
                 <div class="message-history-list" id="message-list">
-                    <!-- Mesajlar buraya eklenecek -->
                     <p class="no-messages" id="no-msg-text">Henüz gönderilmiş mesaj yok.</p>
                 </div>
             </div>
