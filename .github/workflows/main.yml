@@ -19,8 +19,9 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    # Sürümü projenle uyumlu olan 8.1.1'e sabitliyoruz
     - name: Create Gradle Wrapper
-      run: gradle wrapper
+      run: gradle wrapper --gradle-version 8.1.1
       
     - name: Build Debug APK
       run: ./gradlew assembleDebug --stacktrace
