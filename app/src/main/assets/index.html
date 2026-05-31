@@ -3,243 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026 Ücret Hesaplama</title>
-    
-    <style>
-        :root {
-            --primary: #1e293b;
-            --accent: #f59e0b;
-            --bg: #f1f5f9;
-            --card: #ffffff;
-        }
-
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 500px;
-        }
-
-        /* Ana Başlık */
-        .main-title {
-            text-align: center;
-            color: var(--primary);
-            font-size: 24px;
-            font-weight: 800;
-            margin: 20px 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Buton Grubu */
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-
-        .btn {
-            display: block;
-            padding: 18px;
-            border-radius: 15px;
-            text-align: center;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 16px;
-            color: white;
-            transition: transform 0.1s, background-color 0.2s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-maas { background-color: #2563eb; }
-        .btn-maas:hover { background-color: #1d4ed8; }
-        
-        .btn-fark { background-color: #8b5cf6; }
-        .btn-fark:hover { background-color: #7c3aed; }
-        
-        .btn-sosyal { background-color: #10b981; }
-        .btn-sosyal:hover { background-color: #059669; }
-        
-        .btn:active { transform: scale(0.98); }
-
-        /* Duyuru Panosu (Fotoğraf Alanı) */
-        .duyuru-container {
-            width: 100%;
-            margin-bottom: 25px;
-            line-height: 0;
-        }
-
-        .duyuru-img {
-            width: 100%;
-            height: auto;
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-        }
-
-        /* Enflasyon Kartı */
-        .stats-card {
-            background: var(--card);
-            border-radius: 25px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-        }
-
-        .stats-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #f1f5f9;
-            padding-bottom: 10px;
-        }
-
-        .stats-header h2 {
-            margin: 0;
-            color: var(--primary);
-            font-size: 17px;
-            font-weight: 700;
-        }
-
-        .data-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 5px;
-            border-bottom: 1px solid #f8fafc;
-        }
-
-        .data-row span:first-child { color: #64748b; font-size: 15px; }
-        .data-row span:last-child { font-weight: 700; color: var(--primary); }
-
-        /* Bileşik Toplam Kutusu */
-        .total-box {
-            margin-top: 15px;
-            background: #fffcf0;
-            border: 2px dashed var(--accent);
-            border-radius: 15px;
-            padding: 12px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .total-label {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .total-label .title {
-            color: #854d0e;
-            font-weight: 800;
-            font-size: 13px;
-            letter-spacing: 0.5px;
-        }
-
-        .total-label .subtitle {
-            color: #b45309;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .total-val { 
-            color: #854d0e; 
-            font-weight: 900; 
-            font-size: 22px; 
-        }
-        
-        /* Footer Bölümü */
-        .footer { 
-            text-align: center; 
-            color: #94a3b8; 
-            font-size: 12px; 
-            margin-top: 30px; 
-            line-height: 1.8;
-        }
-
-        .footer a {
-            color: #64748b;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-        
-        .footer a:hover {
-            color: var(--primary);
-        }
-    </style>
+    <title>Bordro & Enflasyon 2026</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-    
-    <h1 class="main-title">2026 ÜCRET HESAPLAMA</h1>
-
-    <div class="btn-group">
-        <a href="hesapla.html" class="btn btn-maas">Maaş Hesaplama</a>
-        <a href="fark.html" class="btn btn-fark">Fark Hesaplama</a>
-        <a href="sosyal.html" class="btn btn-sosyal">Sosyal Haklar</a>
-    </div>
-
-    <div class="duyuru-container">
-        <img src="duyuru.jpg" alt="Duyuru Panosu" class="duyuru-img">
-    </div>
-
-    <div class="stats-card">
-        <div class="stats-header">
-            <span style="margin-right: 10px; font-size: 20px;">📊</span>
-            <h2>2026 Enflasyon Verileri</h2>
+    <!-- ÜST HEADER -->
+    <header class="app-header">
+        <div class="header-logo">
+            <svg class="icon-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            <h1>Bordro <span class="year">2026</span></h1>
         </div>
+        <span class="status-badge">Offline Aktif</span>
+    </header>
 
-        <div class="data-row"><span>Ocak 2026</span><span>%4,84</span></div>
-        <div class="data-row"><span>Şubat 2026</span><span>%2,96</span></div>
-        <div class="data-row"><span>Mart 2026</span><span>%1,94</span></div>
-        <div class="data-row"><span>Nisan 2026</span><span>%4,18</span></div>
+    <!-- ANA İÇERİK ALANI -->
+    <main class="app-content">
 
-        <div class="total-box">
-            <div class="total-label">
-                <span class="title">4 AYLIK TOPLAM</span>
-                <span class="subtitle">(BİLEŞİK ENFLASYON)</span>
+        <!-- SEKME 1: MAAŞ HESAPLAMA -->
+        <section id="tab-salary" class="tab-panel active">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Maaş Hesaplama</h2>
+                    <p class="subtitle">Net/Brüt ve Vergi Muafiyetli Hesaplama</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="calc-type">Hesaplama Türü</label>
+                    <select id="calc-type">
+                        <option value="brut-to-net">Brütten Nete</option>
+                        <option value="net-to-brut">Netten Brüte</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="salary-input">Tutar (TL)</label>
+                    <input type="number" id="salary-input" placeholder="Örn: 45000" min="0">
+                </div>
+
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="tax-bracket">Kümülatif Vergi Dilimi</label>
+                        <select id="tax-bracket">
+                            <option value="15">%15 (Başlangıç)</option>
+                            <option value="20">%20</option>
+                            <option value="27">%27</option>
+                            <option value="35">%35</option>
+                            <option value="40">%40 (Üst Limit)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="calculateSalary()">Hesapla</button>
             </div>
-            <span class="total-val" id="bilesik-sonuc">%14,64</span>
-        </div>
-    </div>
 
-    <div class="footer">
-        © 2026 Numan Özdemir - Bordro Sistemleri<br>
-        <a href="tes.html">💬 Görüş ve Önerilerinizi İletin</a>
-    </div>
+            <div id="salary-results" class="card results-card hidden">
+                <h3>Hesaplama Sonuçları</h3>
+                <div class="results-grid">
+                    <div class="result-item highlight">
+                        <span>Net Ele Geçen:</span>
+                        <strong id="res-net">0.00 TL</strong>
+                    </div>
+                    <div class="result-item">
+                        <span>Brüt Maaş:</span>
+                        <span id="res-brut">0.00 TL</span>
+                    </div>
+                    <div class="result-item">
+                        <span>SGK İşçi Payı (%14):</span>
+                        <span id="res-sgk">0.00 TL</span>
+                    </div>
+                    <div class="result-item">
+                        <span>İşsizlik Sigortası (%1):</span>
+                        <span id="res-unemp">0.00 TL</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Gelir Vergisi Matrahı:</span>
+                        <span id="res-tax-base">0.00 TL</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Hesaplanan Gelir Vergisi:</span>
+                        <span id="res-calc-tax">0.00 TL</span>
+                    </div>
+                    <div class="result-item success">
+                        <span>Asgari Ücret Vergi Muafiyeti:</span>
+                        <span id="res-tax-exemption">0.00 TL</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Ödenecek Gelir Vergisi:</span>
+                        <span id="res-final-tax">0.00 TL</span>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-</div>
+        <!-- SEKME 2: SOSYAL HAKLAR -->
+        <section id="tab-benefits" class="tab-panel">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Sosyal Haklar & Yan Haklar</h2>
+                    <p class="subtitle">Aylık yan hakların nakdi değerini hesaplayın</p>
+                </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // İleride tablonun dinamik hesaplanması veya diğer sayfalara 
-        // veri aktarımı için kullanabileceğin veri dizisi:
-        const enflasyonVerileri2026 = [4.84, 2.96, 1.94, 4.18];
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="meal-daily">Günlük Yemek Bedeli (TL)</label>
+                        <input type="number" id="meal-daily" value="170" min="0">
+                    </div>
+                    <div class="col">
+                        <label for="work-days">Çalışılan Gün Sayısı</label>
+                        <input type="number" id="work-days" value="22" min="0" max="31">
+                    </div>
+                </div>
 
-        // Gerekirse bileşik kümülatif hesabı tarayıcı tarafında doğrulamak için:
-        let kume = 1;
-        enflasyonVerileri2026.forEach(function(oran) {
-            kume *= (1 + (oran / 100));
-        });
-        let nihaiSonuc = ((kume - 1) * 100).toFixed(2);
-        
-        // Sistemdeki veriyi doğrula ve formata uygun yazdır (Virgül kullanarak)
-        const formatliSonuc = "%" + nihaiSonuc.replace('.', ',');
-        document.getElementById("bilesik-sonuc").innerText = formatliSonuc;
-        
-        console.log("2026 İlk 4 Aylık Enflasyon Datası Başarıyla Yüklendi: " + formatliSonuc);
-    });
-</script>
+                <div class="form-group">
+                    <label for="transport-monthly">Aylık Yol / Akbil Yardımı (TL)</label>
+                    <input type="number" id="transport-monthly" value="1500" min="0">
+                </div>
 
+                <div class="form-group">
+                    <label for="private-insurance">Özel Sağlık Sigortası (Aylık/TL)</label>
+                    <input type="number" id="private-insurance" value="0" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="other-benefits">Diğer Yan Haklar (Yakacak, Kreş vb./TL)</label>
+                    <input type="number" id="other-benefits" value="0" min="0">
+                </div>
+
+                <button class="btn btn-success" onclick="calculateBenefits()">Paket Değerini Hesapla</button>
+            </div>
+
+            <div id="benefits-results" class="card results-card hidden">
+                <h3>Sosyal Paket Detayları</h3>
+                <div class="results-grid">
+                    <div class="result-item highlight-success">
+                        <span>Toplam Sosyal Hak Değeri:</span>
+                        <strong id="res-total-benefits">0.00 TL</strong>
+                    </div>
+                    <div class="result-item">
+                        <span>Aylık Yemek Kartı Toplamı:</span>
+                        <span id="res-total-meal">0.00 TL</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Yol Yardımı:</span>
+                        <span id="res-total-transport">0.00 TL</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Sağlık Sigortası & Diğer:</span>
+                        <span id="res-total-other">0.00 TL</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEKME 3: BİLEŞİK ENFLASYON -->
+        <section id="tab-inflation" class="tab-panel">
+            <div class="card">
+                <div class="card-header">
+                    <h2>2026 Bileşik Enflasyon Hesaplayıcı</h2>
+                    <p class="subtitle">Aylık enflasyon tahminlerine göre maaş değer kaybı</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="inf-start-salary">Başlangıç Maaşınız (TL)</label>
+                    <input type="number" id="inf-start-salary" placeholder="Örn: 40000" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="inf-rate">Aylık Ortalama Enflasyon Tahmini (%)</label>
+                    <input type="number" id="inf-rate" value="2.5" step="0.1" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="inf-months">Süreç (Ay)</label>
+                    <select id="inf-months">
+                        <option value="3">3 Ay (Çeyrek Dönem)</option>
+                        <option value="6" selected>6 Ay (Yarı Dönem)</option>
+                        <option value="12">12 Ay (Yıllık Dönem)</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-warning" onclick="calculateInflation()">Enflasyon Etkisini Gör</button>
+            </div>
+
+            <div id="inflation-results" class="card results-card hidden">
+                <h3>Alım Gücü Analizi</h3>
+                <div class="results-grid">
+                    <div class="result-item danger">
+                        <span>Bileşik Enflasyon Oranı:</span>
+                        <strong id="res-compound-rate">%0.00</strong>
+                    </div>
+                    <div class="result-item">
+                        <span>Maaşınızın Erimiş Alım Gücü Değeri:</span>
+                        <span id="res-eroded-salary" style="color: var(--text-danger); font-weight: bold;">0.00 TL</span>
+                    </div>
+                    <div class="result-item success">
+                        <span>Alım Gücünü Korumak İçin Gereken Maaş:</span>
+                        <span id="res-target-salary" style="color: var(--text-success); font-weight: bold;">0.00 TL</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEKME 4: İK MESAJLAR -->
+        <section id="tab-messages" class="tab-panel">
+            <div class="card chat-card">
+                <div class="card-header">
+                    <h2>İK İletişim & Duyuru Merkezi</h2>
+                    <p class="subtitle">Otomatik İK asistanı ile interaktif simülasyon</p>
+                </div>
+
+                <div class="chat-area" id="chat-box">
+                    <div class="chat-bubble system">
+                        <strong>Duyuru [İK]:</strong> 2026 yılı asgari ücret vergi muafiyeti sınırları güncellenmiştir. Sorularınızı aşağıdaki kutudan bize iletebilirsiniz.
+                    </div>
+                </div>
+
+                <div class="chat-input-row">
+                    <input type="text" id="chat-input" placeholder="İK'ya bir mesaj yazın... (Örn: Maaş zammı, Yol yardımı)">
+                    <button class="btn btn-primary btn-send" onclick="sendMessage()">Gönder</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ALT NAVİGASYON BAR (MOBILE BOTTOM NAV) -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('salary', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <line x1="12" y1="4" x2="12" y2="20"/>
+            </svg>
+            <span>Maaş</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('benefits', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+            <span>Haklar</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('inflation', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            <span>Enflasyon</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('messages', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            <span>Mesajlar</span>
+        </button>
+    </nav>
+
+    <script src="script.js"></script>
 </body>
 </html>
