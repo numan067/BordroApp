@@ -1,31 +1,31 @@
-package com.numan067.bordro
+package com.numan067.bordroapp // Eğer sendeki farklıysa burayı kendi package adınla değiştir!
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.widget.Button
-import android.widget.Toast
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
+    
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        val btnMaas = findViewById<Button>(R.id.btnMaas)
-        val btnFark = findViewById<Button>(R.id.btnFark)
-        val btnSosyal = findViewById<Button>(R.id.btnSosyal)
-        val btnEnflasyon = findViewById<Button>(R.id.btnEnflasyon)
-
-        btnMaas.setOnClickListener {
-            Toast.makeText(this, "Maaş Hesaplama Hazırlanıyor", Toast.LENGTH_SHORT).show()
-        }
-        btnFark.setOnClickListener {
-            Toast.makeText(this, "Fark Hesaplama Hazırlanıyor", Toast.LENGTH_SHORT).show()
-        }
-        btnSosyal.setOnClickListener {
-            Toast.makeText(this, "Sosyal Haklar Hazırlanıyor", Toast.LENGTH_SHORT).show()
-        }
-        btnEnflasyon.setOnClickListener {
-            Toast.makeText(this, "Enflasyon Hesaplama Hazırlanıyor", Toast.LENGTH_SHORT).show()
-        }
+        
+        val webView = WebView(this)
+        setContentView(webView)
+        
+        val webSettings: WebSettings = webView.settings
+        webSettings.javaScriptEnabled = true
+        webSettings.domStorageEnabled = true
+        
+        // Cihazdaki (uygulama içindeki) html dosyalarına erişim izni
+        webSettings.allowFileAccess = true 
+        
+        webView.webViewClient = WebViewClient() 
+        
+        // İNTERNETTEN DEĞİL, UYGULAMANIN İÇİNDEN YÜKLÜYORUZ
+        webView.loadUrl("file:///android_asset/index.html") 
     }
 }
