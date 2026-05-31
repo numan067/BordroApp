@@ -19,12 +19,16 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    # Sürümü projenle uyumlu olan 8.1.1'e sabitliyoruz
-    - name: Create Gradle Wrapper
-      run: gradle wrapper --gradle-version 8.1.1
+    # GitHub'ın sürümünü ezip, doğrudan 8.1.1 sürümünü kuruyoruz
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: '8.1.1'
+        cache-disabled: true
       
+    # gradlew dosyasını kullanmadan direkt kurduğumuz gradle ile build alıyoruz
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --stacktrace
+      run: gradle assembleDebug --stacktrace
       
     - name: Upload APK
       uses: actions/upload-artifact@v4
