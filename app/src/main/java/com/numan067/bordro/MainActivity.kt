@@ -1,4 +1,4 @@
-package com.numan067.bordroapp // Eğer sendeki farklıysa burayı kendi package adınla değiştir!
+package com.numan067.BordroApp // Eğer sendeki farklıysa burayı kendi package adınla değiştir!
 
 import android.annotation.SuppressLint
 import android.os.Bundle
