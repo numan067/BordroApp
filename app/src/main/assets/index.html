@@ -3,51 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bordro & Enflasyon 2026</title>
+    <title>Maaş Hesaplama 2026</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="header-logo">
-            <svg class="icon-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-            </svg>
-            <h1>Bordro <span class="year">2026</span></h1>
-        </div>
-        <span class="status-badge">Mevzuata Uygun</span>
-    </header>
-
+    <!-- ANA İÇERİK ALANI -->
     <main class="app-content">
 
-        <!-- SEKME 1: MAAŞ HESAPLAMA -->
+        <!-- SEKME 1: MAAŞ HESAPLAMA (BİREBİR EKRAN GÖRÜNTÜSÜ KLONU) -->
         <section id="tab-salary" class="tab-panel active">
-            <div class="card">
-                <div class="card-header">
-                    <h2>Gelişmiş Bordro Robotu</h2>
-                    <p class="subtitle">Birebir Resmi Mevzuat ve İstisna Hesaplamaları</p>
-                </div>
-                
-                <div class="form-group row">
-                    <div class="col">
-                        <label for="calc-type">Hesaplama Yönü</label>
-                        <select id="calc-type" onchange="toggleSalaryPlaceholder()">
-                            <option value="brut-to-net">Brütten Nete</option>
-                            <option value="net-to-brut">Netten Brüte</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <label for="salary-input" id="salary-label">Brüt Maaş (TL)</label>
-                        <input type="number" id="salary-input" placeholder="Örn: 50000" min="0">
-                    </div>
-                </div>
+            <header class="app-header-title">
+                <h1>Maaş Hesaplama 2026</h1>
+            </header>
 
+            <div class="card form-card">
                 <div class="form-group row">
                     <div class="col">
-                        <label for="calc-month">Hesaplama Ayı</label>
-                        <select id="calc-month" onchange="autoSetCumulative()">
+                        <label>DÖNEM (AY)</label>
+                        <select id="calc-month" onchange="updateExemptionAndCalculate()">
                             <option value="1">Ocak</option>
-                            <option value="2">Şubat</option>
+                            <option value="2" selected>Şubat</option>
                             <option value="3">Mart</option>
                             <option value="4">Nisan</option>
                             <option value="5">Mayıs</option>
@@ -61,271 +37,220 @@
                         </select>
                     </div>
                     <div class="col">
-                        <label for="cumulative-input">Önceki Kümülatif Matrah (TL)</label>
-                        <input type="number" id="cumulative-input" value="0" min="0">
+                        <label>VERGİ DİLİMİ</label>
+                        <select id="tax-bracket" onchange="updateExemptionAndCalculate()">
+                            <option value="15" selected>15</option>
+                            <option value="20">20</option>
+                            <option value="27">27</option>
+                            <option value="35">35</option>
+                            <option value="40">40</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Saat Ücreti:</label>
+                    <input type="number" id="hourly-rate" value="0" oninput="calculateBordro()">
+                </div>
+
+                <div class="form-group">
+                    <label>Aylık Çalışma Saati:</label>
+                    <input type="number" id="monthly-hours" value="210" oninput="calculateBordro()">
+                </div>
+
+                <div class="form-group row">
+                    <div class="col">
+                        <label>Gece Zammı (Sa):</label>
+                        <input type="number" id="night-hours" value="0" oninput="calculateBordro()">
+                    </div>
+                    <div class="col">
+                        <label>Fazla Mesai (Sa):</label>
+                        <input type="number" id="overtime-hours" value="0" oninput="calculateBordro()">
                     </div>
                 </div>
 
                 <div class="form-group row">
                     <div class="col">
-                        <label for="employee-type">Çalışan Türü</label>
-                        <select id="employee-type">
-                            <option value="normal">Normal Çalışan</option>
-                            <option value="emekli">Emekli (SGDP)</option>
-                        </select>
+                        <label>Ulusal Bayram (Sa):</label>
+                        <input type="number" id="national-holiday-hours" value="0" oninput="calculateBordro()">
                     </div>
                     <div class="col">
-                        <label for="disability-degree">Engellilik Derecesi</label>
-                        <select id="disability-degree">
-                            <option value="0">Yok</option>
-                            <option value="1">1. Derece (%80+)</option>
-                            <option value="2">2. Derece (%60+)</option>
-                            <option value="3">3. Derece (%40+)</option>
-                        </select>
+                        <label>Dini Bayram (Sa):</label>
+                        <input type="number" id="religious-holiday-hours" value="0" oninput="calculateBordro()">
                     </div>
                 </div>
 
-                <div class="button-group-row">
-                    <button class="btn btn-primary" onclick="calculateSalary()">Hesapla</button>
-                    <button class="btn btn-secondary" onclick="generateYearlyTable()">12 Aylık Özet</button>
+                <div class="form-group">
+                    <label>Resmi Tatil Fazla Mesai (Sa):</label>
+                    <input type="number" id="official-holiday-overtime" value="0" oninput="calculateBordro()">
                 </div>
-            </div>
 
-            <div id="salary-results" class="card results-card hidden">
-                <h3>Bordro Hesaplama Detayları</h3>
-                <div class="results-grid">
-                    <div class="result-item highlight">
-                        <span>Net Maaş:</span>
-                        <strong id="res-net">0.00 TL</strong>
-                    </div>
-                    <div class="result-item highlight-brut">
-                        <span>Brüt Maaş:</span>
-                        <strong id="res-brut" style="color: #cbd5e1;">0.00 TL</strong>
-                    </div>
-                    <div class="result-item"><span>SGK İşçi Kesintisi:</span><span id="res-sgk">0.00 TL</span></div>
-                    <div class="result-item"><span>İşsizlik Kesintisi:</span><span id="res-unemp">0.00 TL</span></div>
-                    <div class="result-item"><span>Gelir Vergisi Matrahı:</span><span id="res-tax-base">0.00 TL</span></div>
-                    <div class="result-item"><span>Hesaplanan Gelir Vergisi:</span><span id="res-calc-tax">0.00 TL</span></div>
-                    <div class="result-item success"><span>Asgari Ücret Vergi İstisnası:</span><span id="res-tax-exemption">0.00 TL</span></div>
-                    <div class="result-item highlight-tax"><span>Ödenecek Gelir Vergisi:</span><span id="res-final-tax">0.00 TL</span></div>
-                    <div class="result-item"><span>Damga Vergisi:</span><span id="res-stamp">0.00 TL</span></div>
-                    <div class="result-item success"><span>Damga Vergisi İstisnası:</span><span id="res-stamp-exemption">0.00 TL</span></div>
-                    <div class="result-item"><span>Ödenecek Damga Vergisi:</span><span id="res-final-stamp">0.00 TL</span></div>
-                    <div class="result-item highlight-employer"><span>Toplam İşveren Maliyeti:</span><strong id="res-employer-cost">0.00 TL</strong></div>
+                <div class="form-group">
+                    <label>Net BES Kesintisi (TL):</label>
+                    <input type="number" id="bes-deduction" value="0" oninput="calculateBordro()">
                 </div>
-            </div>
 
-            <div id="yearly-results" class="card hidden overflow-scroll-table">
-                <h3>12 Aylık Kümülatif Bordro Özeti</h3>
-                <table class="yearly-table">
-                    <thead>
-                        <tr>
-                            <th>Ay</th>
-                            <th>Brüt</th>
-                            <th>Net</th>
-                            <th>SGK</th>
-                            <th>Küm.Matrah</th>
-                            <th>Gelir Ver.</th>
-                            <th>Damga Ver.</th>
-                            <th>Maliyet</th>
-                        </tr>
-                    </thead>
-                    <tbody id="yearly-table-body"></tbody>
-                </table>
+                <div class="form-group">
+                    <label>Vakıf Kesintisi %:</label>
+                    <input type="number" id="vakif-percent" value="0" oninput="calculateBordro()">
+                </div>
+
+                <div class="form-group">
+                    <label>Yol Ücreti (Brüt):</label>
+                    <input type="number" id="transport-gross" value="0" oninput="calculateBordro()">
+                </div>
+
+                <!-- ALTTTAKİ DÖRT GÖSTERGE KUTUSU (GÖRSEL KLON) -->
+                <div class="indicator-grid">
+                    <div class="ind-box">
+                        <span class="ind-title">VERGİ İSTİNASI</span>
+                        <strong class="ind-value" id="ind-exemption">4.462,03</strong>
+                    </div>
+                    <div class="ind-box">
+                        <span class="ind-title">SENDİKA KESİNTİSİ</span>
+                        <strong class="ind-value" id="ind-union">0,00</strong>
+                    </div>
+                    <div class="ind-box">
+                        <span class="ind-title">VAKIF NET TUTAR</span>
+                        <strong class="ind-value" id="ind-vakif">0,00</strong>
+                    </div>
+                    <div class="ind-box">
+                        <span class="ind-title">30 GÜNLÜK NET İKRAMİYE</span>
+                        <strong class="ind-value" id="ind-bonus">0,00</strong>
+                    </div>
+                </div>
+
+                <!-- BÜYÜK MOR BANNER HAKEDİŞ BUTONU -->
+                <div class="purple-net-banner">
+                    <span class="banner-title">Ödenecek Net Maaş</span>
+                    <span class="banner-value" id="res-net-salary">0,00 TL</span>
+                </div>
             </div>
         </section>
 
-        <!-- SEKME 2: SOSYAL HAKLAR -->
+        <!-- SEKME 2: SOSYAL HAKLAR DUYURU VE KILAVUZU -->
         <section id="tab-benefits" class="tab-panel">
-            <div class="card">
-                <div class="card-header">
-                    <h2>Sosyal Haklar & İstisnalar</h2>
-                    <p class="subtitle">Birebir Resmi Muafiyet ve Vergi Tasarrufu</p>
-                </div>
+            <header class="app-header-title">
+                <h1>Sosyal Haklar Rehberi</h1>
+            </header>
 
-                <h3 class="form-section-title">1. Yemek Yardımı</h3>
-                <div class="form-group row">
-                    <div class="col">
-                        <label for="meal-type">Ödeme Modeli</label>
-                        <select id="meal-type">
-                            <option value="ayni">Yemek Kartı (Ayni)</option>
-                            <option value="nakdi">Nakit Ödeme</option>
-                            <option value="isyeri">İşyerinde Yemek</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <label for="meal-daily">Günlük (TL)</label>
-                        <input type="number" id="meal-daily" value="330" min="0">
-                    </div>
-                    <div class="col">
-                        <label for="meal-days">Gün Sayısı</label>
-                        <input type="number" id="meal-days" value="22" min="1">
-                    </div>
+            <div class="card info-card">
+                <h3>Yemek Yardımı (Günlük)</h3>
+                <div class="comparison-table">
+                    <div class="comp-row"><span>2025 Yılı</span><strong>187,00 TL</strong></div>
+                    <div class="comp-row highlight-purple"><span>2026 Yılı (Resmi Sınır)</span><strong>330,00 TL</strong></div>
                 </div>
-
-                <h3 class="form-section-title">2. Yol Yardımı</h3>
-                <div class="form-group row">
-                    <div class="col">
-                        <label for="transport-type">Ödeme Modeli</label>
-                        <select id="transport-type">
-                            <option value="ayni">Yol Kartı / Servis</option>
-                            <option value="nakdi">Nakit Ödeme</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <label for="transport-daily">Günlük (TL)</label>
-                        <input type="number" id="transport-daily" value="158" min="0">
-                    </div>
-                </div>
-
-                <h3 class="form-section-title">3. Aile & Çocuk Yardımı</h3>
-                <div class="form-group row">
-                    <div class="col">
-                        <label for="family-monthly">Aile Yardımı (Aylık/TL)</label>
-                        <input type="number" id="family-monthly" value="0">
-                    </div>
-                    <div class="col">
-                        <label for="child-monthly-val">Çocuk Başı (Aylık/TL)</label>
-                        <input type="number" id="child-monthly-val" value="0">
-                    </div>
-                </div>
-
-                <div class="form-group row">
-                    <div class="col">
-                        <label for="child-06-count">0-6 Yaş Çocuk</label>
-                        <input type="number" id="child-06-count" value="0">
-                    </div>
-                    <div class="col">
-                        <label for="child-6plus-count">6+ Yaş Çocuk</label>
-                        <input type="number" id="child-6plus-count" value="0">
-                    </div>
-                </div>
-
-                <h3 class="form-section-title">4. BES & Sağlık Sigortası</h3>
-                <div class="form-group">
-                    <label for="bes-monthly">İşveren Katkılı BES/Özel Sağlık (Aylık/TL)</label>
-                    <input type="number" id="bes-monthly" value="0">
-                </div>
-
-                <button class="btn btn-success" onclick="calculateBenefits()">Hesapla</button>
+                <p class="desc-text">Ayni (yemek kartı) olarak sağlanan yemek yardımlarında vergi muafiyet sınırı günlük 330 TL'dir. 7577 Sayılı Kanun kapsamında nakdi ödemelerde de SGK muafiyeti 300 TL'ye yükseltilmiştir.</p>
             </div>
 
-            <div id="benefits-results" class="card results-card hidden" style="border-left-color: var(--success);">
-                <h3>Yan Hak Maliyet Analizi</h3>
-                <div class="results-grid">
-                    <div class="result-item highlight-success">
-                        <span>Aylık Sosyal Paket Brütü:</span>
-                        <strong id="res-total-gross">0.00 TL</strong>
-                    </div>
-                    <div class="result-item">
-                        <span>Net Ele Geçen Kazanç:</span>
-                        <span id="res-total-net" style="color: var(--text-success); font-weight:bold;">0.00 TL</span>
-                    </div>
-                    <div class="result-item"><span>Vergi Tasarruf Kazancı:</span><span id="res-tax-saving">0.00 TL</span></div>
-                    <div class="result-item"><span>SGK Muafiyet Kazancı:</span><span id="res-sgk-saving">0.00 TL</span></div>
-                    <div class="result-item highlight-employer"><span>İşverene Maliyeti:</span><strong id="res-total-employer-cost">0.00 TL</strong></div>
+            <div class="card info-card">
+                <h3>Yol / Ulaşım Yardımı (Günlük)</h3>
+                <div class="comparison-table">
+                    <div class="comp-row"><span>2025 Yılı</span><strong>88,00 TL</strong></div>
+                    <div class="comp-row highlight-purple"><span>2026 Yılı (Ayni Sınır)</span><strong>158,00 TL</strong></div>
                 </div>
+                <p class="desc-text">İşveren tarafından sağlanan toplu taşıma kartı veya servis yardımları günlük 158 TL'ye kadar gelir vergisinden tamamen istisnadır.</p>
+            </div>
+
+            <div class="card info-card">
+                <h3>Aile Yardımı (Aylık)</h3>
+                <div class="comparison-table">
+                    <div class="comp-row"><span>2025 Yılı (SGK İstisnası)</span><strong>2.000,25 TL</strong></div>
+                    <div class="comp-row highlight-purple"><span>2026 Yılı (SGK İstisnası)</span><strong>3.303,00 TL</strong></div>
+                </div>
+                <p class="desc-text">Çalışmayan eş için ödenen aile yardımlarında, asgari ücretin %10'u kadarlık kısım (3.303,00 TL) SGK prim kesintisinden muaf tutulmaktadır.</p>
+            </div>
+
+            <div class="card info-card">
+                <h3>Çocuk Yardımı (Çocuk Başı/Aylık)</h3>
+                <div class="comparison-table">
+                    <div class="comp-row"><span>2025 Yılı (SGK İstisnası)</span><strong>400,05 TL</strong></div>
+                    <div class="comp-row highlight-purple"><span>2026 Yılı (SGK İstisnası)</span><strong>660,60 TL</strong></div>
+                </div>
+                <p class="desc-text">En fazla iki çocukla sınırlı olmak üzere çocuk başına asgari ücretin %2'si oranında (660,60 TL) SGK istisnası uygulanır. Vergi muafiyeti ise 0-6 yaş için aylık 693,94 TL'dir.</p>
             </div>
         </section>
 
-        <!-- SEKME 3: ENFLASYON & SAAT ÜCRETİ -->
+        <!-- SEKME 3: ENFLASYON HESAPLAYICI -->
         <section id="tab-inflation" class="tab-panel">
-            <!-- 2026 ENFLASYON TABLOSU (İSTEDİĞİN GÖRÜNÜM) -->
+            <header class="app-header-title">
+                <h1>2026 Enflasyon Verileri</h1>
+            </header>
+
             <div class="card">
-                <div class="card-header">
-                    <h2>Resmi 2026 Enflasyon Verileri</h2>
-                    <p class="subtitle">TÜİK Kümülatif Gerçekleşen Oranlar</p>
-                </div>
-                <div class="inflation-data-table">
-                    <div class="inf-row"><span>Ocak 2026</span><strong>%4,84</strong></div>
-                    <div class="inf-row"><span>Şubat 2026</span><strong>%2,96</strong></div>
-                    <div class="inf-row"><span>Mart 2026</span><strong>%1,94</strong></div>
-                    <div class="inf-row"><span>Nisan 2026</span><strong>%4,18</strong></div>
-                    <div class="inf-row highlight-warning"><span>4 AYLIK TOPLAM</span><strong>%14,64</strong></div>
+                <div class="comparison-table">
+                    <div class="comp-row"><span>Ocak 2026</span><strong>%4,84</strong></div>
+                    <div class="comp-row"><span>Şubat 2026</span><strong>%2,96</strong></div>
+                    <div class="comp-row"><span>Mart 2026</span><strong>%1,94</strong></div>
+                    <div class="comp-row"><span>Nisan 2026</span><strong>%4,18</strong></div>
+                    <div class="comp-row highlight-purple"><span>4 AYLIK TOPLAM</span><strong>%14,64</strong></div>
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-header">
-                    <h2>Saat Ücreti Zam Hesaplayıcı</h2>
-                    <p class="subtitle">Saat ücretinizi kümülatif enflasyona göre güncelleyin</p>
+                    <h2>Saat Ücreti Zam Robotu</h2>
+                    <p class="subtitle">Mevcut saat ücretinizin kümülatif enflasyona göre değişimi</p>
                 </div>
 
                 <div class="form-group">
-                    <label for="hourly-rate-input">Mevcut Saatlik Çalışma Ücretiniz (TL)</label>
-                    <input type="number" id="hourly-rate-input" placeholder="Örn: 150" min="0">
+                    <label>Mevcut Saat Ücretiniz (TL):</label>
+                    <input type="number" id="hourly-rate-input" placeholder="Örn: 150" oninput="calculateHourlyInflation()">
                 </div>
 
-                <div class="form-group">
-                    <label for="monthly-hours">Aylık Toplam Çalışma Saati</label>
-                    <input type="number" id="monthly-hours" value="225" min="1">
-                </div>
-
-                <button class="btn btn-warning" onclick="calculateHourlyInflation()">Saat Ücreti Zammını Hesapla</button>
-            </div>
-
-            <div id="inflation-results" class="card results-card hidden" style="border-left-color: var(--warning);">
-                <h3>Zam Analiz Sonuçları</h3>
-                <div class="results-grid">
-                    <div class="result-item highlight-warning">
-                        <span>Yeni Saat Ücretiniz:</span>
-                        <strong id="res-new-hourly">0.00 TL</strong>
+                <div class="results-grid" style="margin-top: 15px;">
+                    <div class="result-item highlight-purple-light">
+                        <span>Yeni Zamlı Saat Ücretiniz:</span>
+                        <strong id="res-new-hourly">0,00 TL</strong>
                     </div>
                     <div class="result-item">
-                        <span>Saat Başına Alacağınız Zam:</span>
-                        <span id="res-hourly-diff" style="color: var(--text-success); font-weight: bold;">0.00 TL</span>
-                    </div>
-                    <div class="result-item">
-                        <span>Mevcut Aylık Maaşınız:</span>
-                        <span id="res-old-monthly">0.00 TL</span>
-                    </div>
-                    <div class="result-item">
-                        <span>Yeni Aylık Zamlı Maaşınız:</span>
-                        <span id="res-new-monthly" style="color: var(--text-success); font-weight: bold;">0.00 TL</span>
-                    </div>
-                    <div class="result-item highlight-success">
-                        <span>Aylık Toplam Net Zam Artışı:</span>
-                        <strong id="res-monthly-diff">0.00 TL</strong>
+                        <span>Saatlik Net Zam Artışı:</span>
+                        <span id="res-hourly-diff" style="color: #7e22ce; font-weight: bold;">+ 0,00 TL</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SEKME 4: İK MESAJLAR -->
+        <!-- SEKME 4: MESAJLAR & E-POSTA -->
         <section id="tab-messages" class="tab-panel">
+            <header class="app-header-title">
+                <h1>Mesaj Gönder</h1>
+            </header>
+
             <div class="card chat-card">
-                <div class="card-header">
-                    <h2>İK İletişim & Duyuru Merkezi</h2>
-                    <p class="subtitle">İK Asistanı ile interaktif simülasyon</p>
+                <div class="form-group">
+                    <label>E-Posta İletilecek Adres:</label>
+                    <input type="text" value="numan067@gmail.com" disabled style="background: #f1f5f9; color: #64748b;">
                 </div>
-
-                <div class="chat-area" id="chat-box">
-                    <div class="chat-bubble system">
-                        <strong>Duyuru [İK]:</strong> 2026 yılı 4 Aylık kümülatif enflasyon oranı %14.64 olarak açıklanmıştır. Saatlik ve aylık ücret güncellemeleri hakkında sorularınızı buradan iletebilirsiniz.
-                    </div>
+                <div class="form-group">
+                    <label>Mesajınız:</label>
+                    <textarea id="chat-textarea" rows="4" placeholder="Buraya mesajınızı yazın..."></textarea>
                 </div>
+                <button class="btn btn-purple" onclick="sendMailAndRender()">Mesaj Gönder (E-Posta)</button>
 
-                <div class="chat-input-row">
-                    <input type="text" id="chat-input" placeholder="İK'ya yazın... (Örn: Maaş zammı, Yemek yardımı)">
-                    <button class="btn btn-primary btn-send" onclick="sendMessage()">Gönder</button>
+                <h3 style="margin-top: 20px; font-size: 0.95rem; color: #475569; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">Gönderilen Mesajlar</h3>
+                <div class="message-history-list" id="message-list">
+                    <!-- Mesajlar buraya eklenecek -->
+                    <p class="no-messages" id="no-msg-text">Henüz gönderilmiş mesaj yok.</p>
                 </div>
             </div>
         </section>
 
     </main>
 
+    <!-- ALT NAVİGASYON BAR (SABİT) -->
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="switchTab('salary', this)">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/>
             </svg>
-            <span>Maaş</span>
+            <span>Bordro</span>
         </button>
         <button class="nav-item" onclick="switchTab('benefits', this)">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
             </svg>
-            <span>Haklar</span>
+            <span>Sosyal</span>
         </button>
         <button class="nav-item" onclick="switchTab('inflation', this)">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
