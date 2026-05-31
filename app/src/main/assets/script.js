@@ -1,4 +1,3 @@
-// SEKME DEĞİŞTİRME MANTIĞI
 function switchTab(tabId, element) {
     document.querySelectorAll('.tab-panel').forEach(panel => {
         panel.classList.remove('active');
@@ -6,22 +5,18 @@ function switchTab(tabId, element) {
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
     });
-
     document.getElementById(`tab-${tabId}`).classList.add('active');
     element.classList.add('active');
 }
 
-// PARA BİRİMİ BİÇİMLENDİRİCİ
 function formatTL(value) {
     return value.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' TL';
 }
 
-// SEÇİLEN YÖNE GÖRE YAZILARI GÜNCELLE
 function toggleSalaryPlaceholder() {
     const calcType = document.getElementById('calc-type').value;
     const label = document.getElementById('salary-label');
     const input = document.getElementById('salary-input');
-    
     if (calcType === 'brut-to-net') {
         label.innerText = "Brüt Maaş (TL)";
         input.placeholder = "Örn: 50000";
@@ -31,7 +26,6 @@ function toggleSalaryPlaceholder() {
     }
 }
 
-// AYA GÖRE KÜMÜLATİF MATRAHI OTOMATİK TAHMİN ETME
 function autoSetCumulative() {
     const month = parseInt(document.getElementById('calc-month').value);
     const salary = parseFloat(document.getElementById('salary-input').value) || 0;
@@ -42,19 +36,15 @@ function autoSetCumulative() {
         inputCumulative.value = 0;
         return;
     }
-
     let estimatedBrut = calcType === 'brut-to-net' ? salary : (salary / 0.72);
-    let monthlyTaxBase = estimatedBrut * 0.85; // %15 SGK payı düştükten sonra kalan
-    
+    let monthlyTaxBase = estimatedBrut * 0.85;
     let estimatedCumulative = (month - 1) * monthlyTaxBase;
     inputCumulative.value = Math.round(estimatedCumulative);
 }
 
-// RESMİ GELİR VERGİSİ DİLİMLERİ (2026 TAHMİNİ)
 const taxBrackets = [158000, 380000, 900000, 4300000];
 const taxRates = [0.15, 0.20, 0.27, 0.35, 0.40];
 
-// DİLİMLİ VERGİ HESAPLAYICI
 function calculateProgressiveTax(cumulativeBefore, currentMatrah) {
     let taxBefore = getTaxForCumulative(cumulativeBefore);
     let taxAfter = getTaxForCumulative(cumulativeBefore + currentMatrah);
@@ -77,12 +67,10 @@ function getTaxForCumulative(amount) {
     return tax;
 }
 
-// 2026 RESMİ BORDRO ÇEKİRDEK HESAPLAYICISI
 function calculateBordroCore(brut, monthIndex, cumulativeBefore, isEmekli, disabilityDegree) {
-    const minWageGross = 33030.00; // 2026 Brüt Asgari Ücret Tahmini
-    const sgkCeiling = minWageGross * 7.5; // SGK Tavan Matrahı
+    const minWageGross = 33030.00;
+    const sgkCeiling = minWageGross * 7.5;
     
-    // 1. SGK Kesintileri
     let sgkRate = isEmekli ? 0.075 : 0.14;
     let unempRate = isEmekli ? 0.00 : 0.01;
     
@@ -90,18 +78,13 @@ function calculateBordroCore(brut, monthIndex, cumulativeBefore, isEmekli, disab
     let sgkWork = sgkBase * sgkRate;
     let unempWork = sgkBase * unempRate;
     
-    // 2. Gelir Vergisi Matrahı
     let taxBase = brut - sgkWork - unempWork;
-    
-    // Engellilik İndirimi
     const disabilityDeductions = [0, 20000, 10000, 5000];
     let deduction = disabilityDeductions[disabilityDegree] || 0;
     let adjustedTaxBase = Math.max(0, taxBase - deduction);
     
-    // 3. Gelir Vergisi Hesabı
     let calculatedTax = calculateProgressiveTax(cumulativeBefore, adjustedTaxBase);
     
-    // 4. Asgari Ücret Gelir Vergisi İstisna Hesabı
     let minWageSgkWork = minWageGross * 0.14;
     let minWageUnempWork = minWageGross * 0.01;
     let minWageTaxBase = minWageGross - minWageSgkWork - minWageUnempWork;
@@ -111,15 +94,12 @@ function calculateBordroCore(brut, monthIndex, cumulativeBefore, isEmekli, disab
     
     let finalIncomeTax = Math.max(0, calculatedTax - minWageIncomeTaxExemption);
     
-    // 5. Damga Vergisi ve İstisnası
     let stampTax = brut * 0.00759;
     let minWageStampTaxExemption = minWageGross * 0.00759;
     let finalStampTax = Math.max(0, stampTax - minWageStampTaxExemption);
     
-    // 6. Net Ele Geçen
     let net = brut - sgkWork - unempWork - finalIncomeTax - finalStampTax;
     
-    // 7. İşveren Maliyeti (5 Puanlık indirim dahil edilmiştir)
     let sgkEmployerRate = isEmekli ? 0.225 : 0.155; 
     let unempEmployerRate = isEmekli ? 0.00 : 0.02;
     let sgkEmployer = sgkBase * sgkEmployerRate;
@@ -127,45 +107,29 @@ function calculateBordroCore(brut, monthIndex, cumulativeBefore, isEmekli, disab
     let totalEmployerCost = brut + sgkEmployer + unempEmployer;
     
     return {
-        brut: brut,
-        net: net,
-        sgkWork: sgkWork,
-        unempWork: unempWork,
-        taxBase: taxBase,
-        calculatedTax: calculatedTax,
-        exemption: minWageIncomeTaxExemption,
-        finalIncomeTax: finalIncomeTax,
-        stampTax: stampTax,
-        stampExemption: minWageStampTaxExemption,
-        finalStampTax: finalStampTax,
-        employerCost: totalEmployerCost
+        brut: brut, net: net, sgkWork: sgkWork, unempWork: unempWork,
+        taxBase: taxBase, calculatedTax: calculatedTax, exemption: minWageIncomeTaxExemption,
+        finalIncomeTax: finalIncomeTax, stampTax: stampTax, stampExemption: minWageStampTaxExemption,
+        finalStampTax: finalStampTax, employerCost: totalEmployerCost
     };
 }
 
-// NETTEN BRÜTE HASASİYETLİ ÇÖZÜCÜ (Binary Search)
 function solveNetToBrut(targetNet, monthIndex, cumulativeBefore, isEmekli, disabilityDegree) {
     let low = targetNet;
     let high = targetNet * 3 + 100000;
     let epsilon = 0.001;
     let maxIterations = 100;
-    
     let gross = (low + high) / 2;
     for (let i = 0; i < maxIterations; i++) {
         let calc = calculateBordroCore(gross, monthIndex, cumulativeBefore, isEmekli, disabilityDegree);
-        if (Math.abs(calc.net - targetNet) < epsilon) {
-            break;
-        }
-        if (calc.net < targetNet) {
-            low = gross;
-        } else {
-            high = gross;
-        }
+        if (Math.abs(calc.net - targetNet) < epsilon) break;
+        if (calc.net < targetNet) low = gross;
+        else high = gross;
         gross = (low + high) / 2;
     }
     return gross;
 }
 
-// TEK AY HESAPLAMA BUTONU
 function calculateSalary() {
     const calcType = document.getElementById('calc-type').value;
     const salaryInput = parseFloat(document.getElementById('salary-input').value) || 0;
@@ -177,15 +141,11 @@ function calculateSalary() {
     if (salaryInput <= 0) return;
 
     let finalBrut = 0;
-    if (calcType === 'brut-to-net') {
-        finalBrut = salaryInput;
-    } else {
-        finalBrut = solveNetToBrut(salaryInput, month, cumulative, isEmekli, disabilityDegree);
-    }
+    if (calcType === 'brut-to-net') finalBrut = salaryInput;
+    else finalBrut = solveNetToBrut(salaryInput, month, cumulative, isEmekli, disabilityDegree);
 
     const res = calculateBordroCore(finalBrut, month, cumulative, isEmekli, disabilityDegree);
 
-    // DEĞERLERİ EKRANA YANSIT
     document.getElementById('res-net').innerText = formatTL(res.net);
     document.getElementById('res-brut').innerText = formatTL(res.brut);
     document.getElementById('res-sgk').innerText = formatTL(res.sgkWork);
@@ -203,7 +163,6 @@ function calculateSalary() {
     document.getElementById('yearly-results').classList.add('hidden');
 }
 
-// 12 AYLIK TABLO DÖKÜMÜ JAVASCRIPT MOTORU
 function generateYearlyTable() {
     const calcType = document.getElementById('calc-type').value;
     const salaryInput = parseFloat(document.getElementById('salary-input').value) || 0;
@@ -216,17 +175,14 @@ function generateYearlyTable() {
     tableBody.innerHTML = '';
 
     let currentCumulative = 0;
-    const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Aralık", "Eylül", "Ekim", "Kasım", "Aralık"];
+    const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
     const disabilityDeductions = [0, 20000, 10000, 5000];
     let deduction = disabilityDeductions[disabilityDegree] || 0;
 
     for (let month = 1; month <= 12; month++) {
         let brut = 0;
-        if (calcType === 'brut-to-net') {
-            brut = salaryInput;
-        } else {
-            brut = solveNetToBrut(salaryInput, month, currentCumulative, isEmekli, disabilityDegree);
-        }
+        if (calcType === 'brut-to-net') brut = salaryInput;
+        else brut = solveNetToBrut(salaryInput, month, currentCumulative, isEmekli, disabilityDegree);
 
         let res = calculateBordroCore(brut, month, currentCumulative, isEmekli, disabilityDegree);
 
@@ -243,7 +199,6 @@ function generateYearlyTable() {
         `;
         tableBody.appendChild(row);
 
-        // Kümülatif Gelir Vergisi matrahını sonraki aya aktar
         let currentMonthBase = Math.max(0, res.taxBase - deduction);
         currentCumulative += currentMonthBase;
     }
@@ -252,42 +207,105 @@ function generateYearlyTable() {
     document.getElementById('salary-results').classList.add('hidden');
 }
 
-// SOSYAL HAKLAR HESAPLAMA
 function calculateBenefits() {
+    const minWageGross = 33030.00;
+    const mealCardTaxLimit = 330.00; 
+    const mealCashLimit = 300.00; 
+    const transportCardLimit = 158.00; 
+    const familySgkLimit = 3303.00; 
+    const childSgkLimitPerChild = 660.60; 
+    const child06TaxLimit = 693.94; 
+    const child6plusTaxLimit = 346.97; 
+    const besSgkLimit = 9909.00; 
+
+    const mealType = document.getElementById('meal-type').value;
     const mealDaily = parseFloat(document.getElementById('meal-daily').value) || 0;
-    const workDays = parseFloat(document.getElementById('work-days').value) || 0;
-    const transport = parseFloat(document.getElementById('transport-monthly').value) || 0;
-    const insurance = parseFloat(document.getElementById('private-insurance').value) || 0;
-    const other = parseFloat(document.getElementById('other-benefits').value) || 0;
+    const mealDays = parseFloat(document.getElementById('meal-days').value) || 22;
+    const transportType = document.getElementById('transport-type').value;
+    const transportDaily = parseFloat(document.getElementById('transport-daily').value) || 0;
+    const familyMonthly = parseFloat(document.getElementById('family-monthly').value) || 0;
+    const childMonthlyVal = parseFloat(document.getElementById('child-monthly-val').value) || 0;
+    const child06Count = parseInt(document.getElementById('child-06-count').value) || 0;
+    const child6plusCount = parseInt(document.getElementById('child-6plus-count').value) || 0;
+    const besMonthly = parseFloat(document.getElementById('bes-monthly').value) || 0;
 
-    const totalMeal = mealDaily * workDays;
-    const totalOthers = insurance + other;
-    const grandTotal = totalMeal + transport + totalOthers;
+    let mealGross = mealDaily * mealDays;
+    let mealTaxExempt = 0, mealSgkExempt = 0;
+    if (mealType === 'ayni') {
+        mealTaxExempt = Math.min(mealDaily, mealCardTaxLimit) * mealDays;
+        mealSgkExempt = mealGross;
+    } else if (mealType === 'nakdi') {
+        mealTaxExempt = Math.min(mealDaily, mealCashLimit) * mealDays;
+        mealSgkExempt = Math.min(mealDaily, mealCashLimit) * mealDays;
+    } else if (mealType === 'isyeri') {
+        mealTaxExempt = mealGross; mealSgkExempt = mealGross;
+    }
 
-    document.getElementById('res-total-benefits').innerText = formatTL(grandTotal);
-    document.getElementById('res-total-meal').innerText = formatTL(totalMeal);
-    document.getElementById('res-total-transport').innerText = formatTL(transport);
-    document.getElementById('res-total-other').innerText = formatTL(totalOthers);
+    let transportGross = transportDaily * mealDays;
+    let transportTaxExempt = 0, transportSgkExempt = 0;
+    if (transportType === 'ayni') {
+        transportTaxExempt = Math.min(transportDaily, transportCardLimit) * mealDays;
+        transportSgkExempt = transportGross;
+    }
+
+    let familyGross = familyMonthly;
+    let familySgkExempt = Math.min(familyMonthly, familySgkLimit);
+
+    const totalChildren = child06Count + child6plusCount;
+    let childGross = totalChildren * childMonthlyVal;
+    let childSgkExempt = Math.min(childGross, childSgkLimitPerChild * Math.min(totalChildren, 2));
+    let childTaxExempt = Math.min(childGross, (child06Count * child06TaxLimit) + (child6plusCount * child6plusTaxLimit));
+
+    let besGross = besMonthly;
+    let besSgkExempt = Math.min(besMonthly, besSgkLimit);
+    let besTaxExempt = besMonthly * 0.15;
+
+    let totalGross = mealGross + transportGross + familyGross + childGross + besGross;
+    let totalTaxExempt = mealTaxExempt + transportTaxExempt + childTaxExempt + besTaxExempt;
+    let totalSgkExempt = mealSgkExempt + transportSgkExempt + familySgkExempt + childSgkExempt + besSgkExempt;
+
+    let taxSaved = totalTaxExempt * 0.20;
+    let sgkSaved = totalSgkExempt * 0.15;
+    let totalNetValue = totalGross - ( (totalGross - totalTaxExempt) * 0.20 ) - ( (totalGross - totalSgkExempt) * 0.15 );
+    totalNetValue = Math.min(totalGross, Math.max(0, totalNetValue));
+
+    let employerCostSaved = totalSgkExempt * 0.175;
+    let totalEmployerCost = totalGross + (totalGross * 0.175) - employerCostSaved;
+
+    document.getElementById('res-total-gross').innerText = formatTL(totalGross);
+    document.getElementById('res-total-net').innerText = formatTL(totalNetValue);
+    document.getElementById('res-tax-saving').innerText = formatTL(taxSaved);
+    document.getElementById('res-sgk-saving').innerText = formatTL(sgkSaved);
+    document.getElementById('res-total-employer-cost').innerText = formatTL(totalEmployerCost);
 
     document.getElementById('benefits-results').classList.remove('hidden');
 }
 
-// BİLEŞİK ENFLASYON HESAPLAMA
-function calculateInflation() {
-    const startSalary = parseFloat(document.getElementById('inf-start-salary').value) || 0;
-    const monthlyRate = parseFloat(document.getElementById('inf-rate').value) || 0;
-    const months = parseInt(document.getElementById('inf-months').value) || 6;
+// SAAT ÜCRETİ VE ENFLASYON HESAPLAYICI (YENİ EKLEME)
+function calculateHourlyInflation() {
+    const hourlyRate = parseFloat(document.getElementById('hourly-rate-input').value) || 0;
+    const monthlyHours = parseFloat(document.getElementById('monthly-hours').value) || 225;
 
-    if (startSalary <= 0) return;
+    if (hourlyRate <= 0) return;
 
-    const compoundRate = Math.pow((1 + (monthlyRate / 100)), months) - 1;
-    const compoundPercent = (compoundRate * 100).toFixed(2);
-    const erodedSalary = startSalary / Math.pow((1 + (monthlyRate / 100)), months);
-    const targetSalary = startSalary * Math.pow((1 + (monthlyRate / 100)), months);
+    // Resmi 4 Aylık Kümülatif Enflasyon Oranı: %14.64
+    const inflationRate = 14.64 / 100;
 
-    document.getElementById('res-compound-rate').innerText = `%${compoundPercent}`;
-    document.getElementById('res-eroded-salary').innerText = formatTL(erodedSalary);
-    document.getElementById('res-target-salary').innerText = formatTL(targetSalary);
+    // Saatlik Hesaplamalar
+    const hourlyIncrease = hourlyRate * inflationRate;
+    const newHourlyRate = hourlyRate + hourlyIncrease;
+
+    // Aylık Hesaplamalar
+    const oldMonthlySalary = hourlyRate * monthlyHours;
+    const newMonthlySalary = newHourlyRate * monthlyHours;
+    const monthlyIncrease = oldMonthlySalary * inflationRate;
+
+    // EKRANA YANSIT
+    document.getElementById('res-new-hourly').innerText = formatTL(newHourlyRate);
+    document.getElementById('res-hourly-diff').innerText = "+ " + formatTL(hourlyIncrease);
+    document.getElementById('res-old-monthly').innerText = formatTL(oldMonthlySalary);
+    document.getElementById('res-new-monthly').innerText = formatTL(newMonthlySalary);
+    document.getElementById('res-monthly-diff').innerText = "+ " + formatTL(monthlyIncrease);
 
     document.getElementById('inflation-results').classList.remove('hidden');
 }
@@ -316,13 +334,13 @@ function sendMessage() {
         const cleanText = text.toLowerCase();
 
         if (cleanText.includes("zam") || cleanText.includes("enflasyon") || cleanText.includes("artış")) {
-            replyText = "2026 yılı enflasyon farkı ve performans zam oranları, yönetim kurulumuz tarafından değerlendirilmekte olup, en geç dönem sonunda duyurulacaktır.";
+            replyText = "2026 yılı ilk 4 aylık kümülatif enflasyon farkı %14.64 olarak belirlenmiştir. Saatlik ücret güncellemeleri bu oran baz alınarak yapılacaktır.";
         } else if (cleanText.includes("yemek") || cleanText.includes("bilet") || cleanText.includes("sodexo")) {
-            replyText = "Günlük yemek yardımı limitlerimiz devletin belirlediği istisna haddine göre (2026 için günlük 170 TL olarak) güncellenmiştir.";
+            replyText = "Yemek kartı yardımı limitlerimiz günlük ayni 330 TL (nakit 300 TL) sınırına kadar vergiden muaftır.";
         } else if (cleanText.includes("yol") || cleanText.includes("ulaşım") || cleanText.includes("akbil")) {
-            replyText = "Yol yardımı ödemeleriniz, her ayın sonunda çalıştığınız gün baz alınarak maaş bordronuza yan hak olarak yansıtılmaktadır.";
+            replyText = "Yol yardımı ayni ödemeleriniz günlük 158 TL sınırına kadar vergiden istisnadır.";
         } else if (cleanText.includes("merhaba") || cleanText.includes("selam")) {
-            replyText = "Merhaba! Ben İK Asistanı. Bordro, yan haklar veya 2026 maaş sorularınız için burayım.";
+            replyText = "Merhaba! İK asistanıyım. Maaş, sosyal haklar ve 4 aylık %14.64 kümülatif enflasyon zammı sorularınız için buradayım.";
         }
 
         replyBubble.innerHTML = `<strong>İK Asistanı:</strong> ${replyText}`;
@@ -331,7 +349,6 @@ function sendMessage() {
     }, 1000);
 }
 
-// "Enter" tuşu yakalama
 document.getElementById('chat-input').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
         sendMessage();
