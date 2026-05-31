@@ -16,7 +16,7 @@
             </svg>
             <h1>Bordro <span class="year">2026</span></h1>
         </div>
-        <span class="status-badge">Offline Aktif</span>
+        <span class="status-badge">Mevzuata Uygun</span>
     </header>
 
     <!-- ANA İÇERİK ALANI -->
@@ -26,56 +26,91 @@
         <section id="tab-salary" class="tab-panel active">
             <div class="card">
                 <div class="card-header">
-                    <h2>Maaş Hesaplama</h2>
-                    <p class="subtitle">Net/Brüt ve Vergi Muafiyetli Hesaplama</p>
+                    <h2>Gelişmiş Bordro Robotu</h2>
+                    <p class="subtitle">Birebir Resmi Mevzuat ve İstisna Hesaplamaları</p>
                 </div>
                 
-                <div class="form-group">
-                    <label for="calc-type">Hesaplama Türü</label>
-                    <select id="calc-type">
-                        <option value="brut-to-net">Brütten Nete</option>
-                        <option value="net-to-brut">Netten Brüte</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="salary-input">Tutar (TL)</label>
-                    <input type="number" id="salary-input" placeholder="Örn: 45000" min="0">
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="calc-type">Hesaplama Yönü</label>
+                        <select id="calc-type" onchange="toggleSalaryPlaceholder()">
+                            <option value="brut-to-net">Brütten Nete</option>
+                            <option value="net-to-brut">Netten Brüte</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="salary-input" id="salary-label">Brüt Maaş (TL)</label>
+                        <input type="number" id="salary-input" placeholder="Örn: 50000" min="0">
+                    </div>
                 </div>
 
                 <div class="form-group row">
                     <div class="col">
-                        <label for="tax-bracket">Kümülatif Vergi Dilimi</label>
-                        <select id="tax-bracket">
-                            <option value="15">%15 (Başlangıç)</option>
-                            <option value="20">%20</option>
-                            <option value="27">%27</option>
-                            <option value="35">%35</option>
-                            <option value="40">%40 (Üst Limit)</option>
+                        <label for="calc-month">Hesaplama Ayı</label>
+                        <select id="calc-month" onchange="autoSetCumulative()">
+                            <option value="1">Ocak</option>
+                            <option value="2">Şubat</option>
+                            <option value="3">Mart</option>
+                            <option value="4">Nisan</option>
+                            <option value="5">Mayıs</option>
+                            <option value="6">Haziran</option>
+                            <option value="7">Temmuz</option>
+                            <option value="8">Ağustos</option>
+                            <option value="9">Eylül</option>
+                            <option value="10">Ekim</option>
+                            <option value="11">Kasım</option>
+                            <option value="12">Aralık</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="cumulative-input">Önceki Kümülatif GV Matrahı (TL)</label>
+                        <input type="number" id="cumulative-input" value="0" min="0">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="employee-type">Çalışan Türü</label>
+                        <select id="employee-type">
+                            <option value="normal">Normal Çalışan</option>
+                            <option value="emekli">Emekli (SGDP)</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="disability-degree">Engellilik Derecesi</label>
+                        <select id="disability-degree">
+                            <option value="0">Yok</option>
+                            <option value="1">1. Derece (%80+)</option>
+                            <option value="2">2. Derece (%60+)</option>
+                            <option value="3">3. Derece (%40+)</option>
                         </select>
                     </div>
                 </div>
 
-                <button class="btn btn-primary" onclick="calculateSalary()">Hesapla</button>
+                <div class="button-group-row">
+                    <button class="btn btn-primary" onclick="calculateSalary()">Hesapla</button>
+                    <button class="btn btn-secondary" onclick="generateYearlyTable()">12 Aylık Özet Çıkar</button>
+                </div>
             </div>
 
+            <!-- DETAYLI SONUÇ KARTI -->
             <div id="salary-results" class="card results-card hidden">
-                <h3>Hesaplama Sonuçları</h3>
+                <h3>Bordro Hesaplama Detayları</h3>
                 <div class="results-grid">
                     <div class="result-item highlight">
-                        <span>Net Ele Geçen:</span>
-                        <strong id="res-net">0.00 TL</strong>
+                        <span>Net Maaş:</span>
+                        <strong id="res-net" class="text-primary-color">0.00 TL</strong>
                     </div>
-                    <div class="result-item">
+                    <div class="result-item highlight-brut">
                         <span>Brüt Maaş:</span>
-                        <span id="res-brut">0.00 TL</span>
+                        <strong id="res-brut" style="color: #cbd5e1;">0.00 TL</strong>
                     </div>
                     <div class="result-item">
-                        <span>SGK İşçi Payı (%14):</span>
+                        <span>SGK İşçi Kesintisi:</span>
                         <span id="res-sgk">0.00 TL</span>
                     </div>
                     <div class="result-item">
-                        <span>İşsizlik Sigortası (%1):</span>
+                        <span>İşsizlik Sigortası İşçi Kesintisi:</span>
                         <span id="res-unemp">0.00 TL</span>
                     </div>
                     <div class="result-item">
@@ -87,14 +122,52 @@
                         <span id="res-calc-tax">0.00 TL</span>
                     </div>
                     <div class="result-item success">
-                        <span>Asgari Ücret Vergi Muafiyeti:</span>
+                        <span>Gelir Vergisi İstisnası (Asgari Ücret):</span>
                         <span id="res-tax-exemption">0.00 TL</span>
                     </div>
-                    <div class="result-item">
+                    <div class="result-item highlight-tax">
                         <span>Ödenecek Gelir Vergisi:</span>
                         <span id="res-final-tax">0.00 TL</span>
                     </div>
+                    <div class="result-item">
+                        <span>Damga Vergisi Kesintisi:</span>
+                        <span id="res-stamp">0.00 TL</span>
+                    </div>
+                    <div class="result-item success">
+                        <span>Damga Vergisi İstisnası (Asgari Ücret):</span>
+                        <span id="res-stamp-exemption">0.00 TL</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Ödenecek Damga Vergisi:</span>
+                        <span id="res-final-stamp">0.00 TL</span>
+                    </div>
+                    <div class="result-item highlight-employer">
+                        <span>Toplam İşveren Maliyeti:</span>
+                        <strong id="res-employer-cost">0.00 TL</strong>
+                    </div>
                 </div>
+            </div>
+
+            <!-- 12 AYLIK TABLO GÖRÜNÜMÜ -->
+            <div id="yearly-results" class="card hidden overflow-scroll-table">
+                <h3>12 Aylık Kümülatif Bordro Özeti</h3>
+                <table class="yearly-table">
+                    <thead>
+                        <tr>
+                            <th>Ay</th>
+                            <th>Brüt</th>
+                            <th>Net</th>
+                            <th>SGK Primi</th>
+                            <th>Küm. Matrah</th>
+                            <th>Gelir Ver.</th>
+                            <th>Damga Ver.</th>
+                            <th>İşv. Maliyeti</th>
+                        </tr>
+                    </thead>
+                    <tbody id="yearly-table-body">
+                        <!-- JS ile dolacak -->
+                    </tbody>
+                </table>
             </div>
         </section>
 
