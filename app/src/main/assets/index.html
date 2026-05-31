@@ -8,7 +8,6 @@
 </head>
 <body>
 
-    <!-- ÜST HEADER -->
     <header class="app-header">
         <div class="header-logo">
             <svg class="icon-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -19,7 +18,6 @@
         <span class="status-badge">Mevzuata Uygun</span>
     </header>
 
-    <!-- ANA İÇERİK ALANI -->
     <main class="app-content">
 
         <!-- SEKME 1: MAAŞ HESAPLAMA -->
@@ -63,7 +61,7 @@
                         </select>
                     </div>
                     <div class="col">
-                        <label for="cumulative-input">Önceki Kümülatif GV Matrahı (TL)</label>
+                        <label for="cumulative-input">Önceki Kümülatif Matrah (TL)</label>
                         <input type="number" id="cumulative-input" value="0" min="0">
                     </div>
                 </div>
@@ -89,66 +87,34 @@
 
                 <div class="button-group-row">
                     <button class="btn btn-primary" onclick="calculateSalary()">Hesapla</button>
-                    <button class="btn btn-secondary" onclick="generateYearlyTable()">12 Aylık Özet Çıkar</button>
+                    <button class="btn btn-secondary" onclick="generateYearlyTable()">12 Aylık Özet</button>
                 </div>
             </div>
 
-            <!-- DETAYLI SONUÇ KARTI -->
             <div id="salary-results" class="card results-card hidden">
                 <h3>Bordro Hesaplama Detayları</h3>
                 <div class="results-grid">
                     <div class="result-item highlight">
                         <span>Net Maaş:</span>
-                        <strong id="res-net" class="text-primary-color">0.00 TL</strong>
+                        <strong id="res-net">0.00 TL</strong>
                     </div>
                     <div class="result-item highlight-brut">
                         <span>Brüt Maaş:</span>
                         <strong id="res-brut" style="color: #cbd5e1;">0.00 TL</strong>
                     </div>
-                    <div class="result-item">
-                        <span>SGK İşçi Kesintisi:</span>
-                        <span id="res-sgk">0.00 TL</span>
-                    </div>
-                    <div class="result-item">
-                        <span>İşsizlik Sigortası İşçi Kesintisi:</span>
-                        <span id="res-unemp">0.00 TL</span>
-                    </div>
-                    <div class="result-item">
-                        <span>Gelir Vergisi Matrahı:</span>
-                        <span id="res-tax-base">0.00 TL</span>
-                    </div>
-                    <div class="result-item">
-                        <span>Hesaplanan Gelir Vergisi:</span>
-                        <span id="res-calc-tax">0.00 TL</span>
-                    </div>
-                    <div class="result-item success">
-                        <span>Gelir Vergisi İstisnası (Asgari Ücret):</span>
-                        <span id="res-tax-exemption">0.00 TL</span>
-                    </div>
-                    <div class="result-item highlight-tax">
-                        <span>Ödenecek Gelir Vergisi:</span>
-                        <span id="res-final-tax">0.00 TL</span>
-                    </div>
-                    <div class="result-item">
-                        <span>Damga Vergisi Kesintisi:</span>
-                        <span id="res-stamp">0.00 TL</span>
-                    </div>
-                    <div class="result-item success">
-                        <span>Damga Vergisi İstisnası (Asgari Ücret):</span>
-                        <span id="res-stamp-exemption">0.00 TL</span>
-                    </div>
-                    <div class="result-item">
-                        <span>Ödenecek Damga Vergisi:</span>
-                        <span id="res-final-stamp">0.00 TL</span>
-                    </div>
-                    <div class="result-item highlight-employer">
-                        <span>Toplam İşveren Maliyeti:</span>
-                        <strong id="res-employer-cost">0.00 TL</strong>
-                    </div>
+                    <div class="result-item"><span>SGK İşçi Kesintisi:</span><span id="res-sgk">0.00 TL</span></div>
+                    <div class="result-item"><span>İşsizlik Kesintisi:</span><span id="res-unemp">0.00 TL</span></div>
+                    <div class="result-item"><span>Gelir Vergisi Matrahı:</span><span id="res-tax-base">0.00 TL</span></div>
+                    <div class="result-item"><span>Hesaplanan Gelir Vergisi:</span><span id="res-calc-tax">0.00 TL</span></div>
+                    <div class="result-item success"><span>Asgari Ücret Vergi İstisnası:</span><span id="res-tax-exemption">0.00 TL</span></div>
+                    <div class="result-item highlight-tax"><span>Ödenecek Gelir Vergisi:</span><span id="res-final-tax">0.00 TL</span></div>
+                    <div class="result-item"><span>Damga Vergisi:</span><span id="res-stamp">0.00 TL</span></div>
+                    <div class="result-item success"><span>Damga Vergisi İstisnası:</span><span id="res-stamp-exemption">0.00 TL</span></div>
+                    <div class="result-item"><span>Ödenecek Damga Vergisi:</span><span id="res-final-stamp">0.00 TL</span></div>
+                    <div class="result-item highlight-employer"><span>Toplam İşveren Maliyeti:</span><strong id="res-employer-cost">0.00 TL</strong></div>
                 </div>
             </div>
 
-            <!-- 12 AYLIK TABLO GÖRÜNÜMÜ -->
             <div id="yearly-results" class="card hidden overflow-scroll-table">
                 <h3>12 Aylık Kümülatif Bordro Özeti</h3>
                 <table class="yearly-table">
@@ -157,16 +123,14 @@
                             <th>Ay</th>
                             <th>Brüt</th>
                             <th>Net</th>
-                            <th>SGK Primi</th>
-                            <th>Küm. Matrah</th>
+                            <th>SGK</th>
+                            <th>Küm.Matrah</th>
                             <th>Gelir Ver.</th>
                             <th>Damga Ver.</th>
-                            <th>İşv. Maliyeti</th>
+                            <th>Maliyet</th>
                         </tr>
                     </thead>
-                    <tbody id="yearly-table-body">
-                        <!-- JS ile dolacak -->
-                    </tbody>
+                    <tbody id="yearly-table-body"></tbody>
                 </table>
             </div>
         </section>
@@ -175,106 +139,153 @@
         <section id="tab-benefits" class="tab-panel">
             <div class="card">
                 <div class="card-header">
-                    <h2>Sosyal Haklar & Yan Haklar</h2>
-                    <p class="subtitle">Aylık yan hakların nakdi değerini hesaplayın</p>
+                    <h2>Sosyal Haklar & İstisnalar</h2>
+                    <p class="subtitle">Birebir Resmi Muafiyet ve Vergi Tasarrufu</p>
+                </div>
+
+                <h3 class="form-section-title">1. Yemek Yardımı</h3>
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="meal-type">Ödeme Modeli</label>
+                        <select id="meal-type">
+                            <option value="ayni">Yemek Kartı (Ayni)</option>
+                            <option value="nakdi">Nakit Ödeme</option>
+                            <option value="isyeri">İşyerinde Yemek</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="meal-daily">Günlük (TL)</label>
+                        <input type="number" id="meal-daily" value="330" min="0">
+                    </div>
+                    <div class="col">
+                        <label for="meal-days">Gün Sayısı</label>
+                        <input type="number" id="meal-days" value="22" min="1">
+                    </div>
+                </div>
+
+                <h3 class="form-section-title">2. Yol Yardımı</h3>
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="transport-type">Ödeme Modeli</label>
+                        <select id="transport-type">
+                            <option value="ayni">Yol Kartı / Servis</option>
+                            <option value="nakdi">Nakit Ödeme</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="transport-daily">Günlük (TL)</label>
+                        <input type="number" id="transport-daily" value="158" min="0">
+                    </div>
+                </div>
+
+                <h3 class="form-section-title">3. Aile & Çocuk Yardımı</h3>
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="family-monthly">Aile Yardımı (Aylık/TL)</label>
+                        <input type="number" id="family-monthly" value="0">
+                    </div>
+                    <div class="col">
+                        <label for="child-monthly-val">Çocuk Başı (Aylık/TL)</label>
+                        <input type="number" id="child-monthly-val" value="0">
+                    </div>
                 </div>
 
                 <div class="form-group row">
                     <div class="col">
-                        <label for="meal-daily">Günlük Yemek Bedeli (TL)</label>
-                        <input type="number" id="meal-daily" value="170" min="0">
+                        <label for="child-06-count">0-6 Yaş Çocuk</label>
+                        <input type="number" id="child-06-count" value="0">
                     </div>
                     <div class="col">
-                        <label for="work-days">Çalışılan Gün Sayısı</label>
-                        <input type="number" id="work-days" value="22" min="0" max="31">
+                        <label for="child-6plus-count">6+ Yaş Çocuk</label>
+                        <input type="number" id="child-6plus-count" value="0">
                     </div>
                 </div>
 
+                <h3 class="form-section-title">4. BES & Sağlık Sigortası</h3>
                 <div class="form-group">
-                    <label for="transport-monthly">Aylık Yol / Akbil Yardımı (TL)</label>
-                    <input type="number" id="transport-monthly" value="1500" min="0">
+                    <label for="bes-monthly">İşveren Katkılı BES/Özel Sağlık (Aylık/TL)</label>
+                    <input type="number" id="bes-monthly" value="0">
                 </div>
 
-                <div class="form-group">
-                    <label for="private-insurance">Özel Sağlık Sigortası (Aylık/TL)</label>
-                    <input type="number" id="private-insurance" value="0" min="0">
-                </div>
-
-                <div class="form-group">
-                    <label for="other-benefits">Diğer Yan Haklar (Yakacak, Kreş vb./TL)</label>
-                    <input type="number" id="other-benefits" value="0" min="0">
-                </div>
-
-                <button class="btn btn-success" onclick="calculateBenefits()">Paket Değerini Hesapla</button>
+                <button class="btn btn-success" onclick="calculateBenefits()">Hesapla</button>
             </div>
 
-            <div id="benefits-results" class="card results-card hidden">
-                <h3>Sosyal Paket Detayları</h3>
+            <div id="benefits-results" class="card results-card hidden" style="border-left-color: var(--success);">
+                <h3>Yan Hak Maliyet Analizi</h3>
                 <div class="results-grid">
                     <div class="result-item highlight-success">
-                        <span>Toplam Sosyal Hak Değeri:</span>
-                        <strong id="res-total-benefits">0.00 TL</strong>
+                        <span>Aylık Sosyal Paket Brütü:</span>
+                        <strong id="res-total-gross">0.00 TL</strong>
                     </div>
                     <div class="result-item">
-                        <span>Aylık Yemek Kartı Toplamı:</span>
-                        <span id="res-total-meal">0.00 TL</span>
+                        <span>Net Ele Geçen Kazanç:</span>
+                        <span id="res-total-net" style="color: var(--text-success); font-weight:bold;">0.00 TL</span>
                     </div>
-                    <div class="result-item">
-                        <span>Yol Yardımı:</span>
-                        <span id="res-total-transport">0.00 TL</span>
-                    </div>
-                    <div class="result-item">
-                        <span>Sağlık Sigortası & Diğer:</span>
-                        <span id="res-total-other">0.00 TL</span>
-                    </div>
+                    <div class="result-item"><span>Vergi Tasarruf Kazancı:</span><span id="res-tax-saving">0.00 TL</span></div>
+                    <div class="result-item"><span>SGK Muafiyet Kazancı:</span><span id="res-sgk-saving">0.00 TL</span></div>
+                    <div class="result-item highlight-employer"><span>İşverene Maliyeti:</span><strong id="res-total-employer-cost">0.00 TL</strong></div>
                 </div>
             </div>
         </section>
 
-        <!-- SEKME 3: BİLEŞİK ENFLASYON -->
+        <!-- SEKME 3: ENFLASYON & SAAT ÜCRETİ -->
         <section id="tab-inflation" class="tab-panel">
+            <!-- 2026 ENFLASYON TABLOSU (İSTEDİĞİN GÖRÜNÜM) -->
             <div class="card">
                 <div class="card-header">
-                    <h2>2026 Bileşik Enflasyon Hesaplayıcı</h2>
-                    <p class="subtitle">Aylık enflasyon tahminlerine göre maaş değer kaybı</p>
+                    <h2>Resmi 2026 Enflasyon Verileri</h2>
+                    <p class="subtitle">TÜİK Kümülatif Gerçekleşen Oranlar</p>
                 </div>
-
-                <div class="form-group">
-                    <label for="inf-start-salary">Başlangıç Maaşınız (TL)</label>
-                    <input type="number" id="inf-start-salary" placeholder="Örn: 40000" min="0">
+                <div class="inflation-data-table">
+                    <div class="inf-row"><span>Ocak 2026</span><strong>%4,84</strong></div>
+                    <div class="inf-row"><span>Şubat 2026</span><strong>%2,96</strong></div>
+                    <div class="inf-row"><span>Mart 2026</span><strong>%1,94</strong></div>
+                    <div class="inf-row"><span>Nisan 2026</span><strong>%4,18</strong></div>
+                    <div class="inf-row highlight-warning"><span>4 AYLIK TOPLAM</span><strong>%14,64</strong></div>
                 </div>
-
-                <div class="form-group">
-                    <label for="inf-rate">Aylık Ortalama Enflasyon Tahmini (%)</label>
-                    <input type="number" id="inf-rate" value="2.5" step="0.1" min="0">
-                </div>
-
-                <div class="form-group">
-                    <label for="inf-months">Süreç (Ay)</label>
-                    <select id="inf-months">
-                        <option value="3">3 Ay (Çeyrek Dönem)</option>
-                        <option value="6" selected>6 Ay (Yarı Dönem)</option>
-                        <option value="12">12 Ay (Yıllık Dönem)</option>
-                    </select>
-                </div>
-
-                <button class="btn btn-warning" onclick="calculateInflation()">Enflasyon Etkisini Gör</button>
             </div>
 
-            <div id="inflation-results" class="card results-card hidden">
-                <h3>Alım Gücü Analizi</h3>
+            <div class="card">
+                <div class="card-header">
+                    <h2>Saat Ücreti Zam Hesaplayıcı</h2>
+                    <p class="subtitle">Saat ücretinizi kümülatif enflasyona göre güncelleyin</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="hourly-rate-input">Mevcut Saatlik Çalışma Ücretiniz (TL)</label>
+                    <input type="number" id="hourly-rate-input" placeholder="Örn: 150" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="monthly-hours">Aylık Toplam Çalışma Saati</label>
+                    <input type="number" id="monthly-hours" value="225" min="1">
+                </div>
+
+                <button class="btn btn-warning" onclick="calculateHourlyInflation()">Saat Ücreti Zammını Hesapla</button>
+            </div>
+
+            <div id="inflation-results" class="card results-card hidden" style="border-left-color: var(--warning);">
+                <h3>Zam Analiz Sonuçları</h3>
                 <div class="results-grid">
-                    <div class="result-item danger">
-                        <span>Bileşik Enflasyon Oranı:</span>
-                        <strong id="res-compound-rate">%0.00</strong>
+                    <div class="result-item highlight-warning">
+                        <span>Yeni Saat Ücretiniz:</span>
+                        <strong id="res-new-hourly">0.00 TL</strong>
                     </div>
                     <div class="result-item">
-                        <span>Maaşınızın Erimiş Alım Gücü Değeri:</span>
-                        <span id="res-eroded-salary" style="color: var(--text-danger); font-weight: bold;">0.00 TL</span>
+                        <span>Saat Başına Alacağınız Zam:</span>
+                        <span id="res-hourly-diff" style="color: var(--text-success); font-weight: bold;">0.00 TL</span>
                     </div>
-                    <div class="result-item success">
-                        <span>Alım Gücünü Korumak İçin Gereken Maaş:</span>
-                        <span id="res-target-salary" style="color: var(--text-success); font-weight: bold;">0.00 TL</span>
+                    <div class="result-item">
+                        <span>Mevcut Aylık Maaşınız:</span>
+                        <span id="res-old-monthly">0.00 TL</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Yeni Aylık Zamlı Maaşınız:</span>
+                        <span id="res-new-monthly" style="color: var(--text-success); font-weight: bold;">0.00 TL</span>
+                    </div>
+                    <div class="result-item highlight-success">
+                        <span>Aylık Toplam Net Zam Artışı:</span>
+                        <strong id="res-monthly-diff">0.00 TL</strong>
                     </div>
                 </div>
             </div>
@@ -285,17 +296,17 @@
             <div class="card chat-card">
                 <div class="card-header">
                     <h2>İK İletişim & Duyuru Merkezi</h2>
-                    <p class="subtitle">Otomatik İK asistanı ile interaktif simülasyon</p>
+                    <p class="subtitle">İK Asistanı ile interaktif simülasyon</p>
                 </div>
 
                 <div class="chat-area" id="chat-box">
                     <div class="chat-bubble system">
-                        <strong>Duyuru [İK]:</strong> 2026 yılı asgari ücret vergi muafiyeti sınırları güncellenmiştir. Sorularınızı aşağıdaki kutudan bize iletebilirsiniz.
+                        <strong>Duyuru [İK]:</strong> 2026 yılı 4 Aylık kümülatif enflasyon oranı %14.64 olarak açıklanmıştır. Saatlik ve aylık ücret güncellemeleri hakkında sorularınızı buradan iletebilirsiniz.
                     </div>
                 </div>
 
                 <div class="chat-input-row">
-                    <input type="text" id="chat-input" placeholder="İK'ya bir mesaj yazın... (Örn: Maaş zammı, Yol yardımı)">
+                    <input type="text" id="chat-input" placeholder="İK'ya yazın... (Örn: Maaş zammı, Yemek yardımı)">
                     <button class="btn btn-primary btn-send" onclick="sendMessage()">Gönder</button>
                 </div>
             </div>
@@ -303,12 +314,10 @@
 
     </main>
 
-    <!-- ALT NAVİGASYON BAR (MOBILE BOTTOM NAV) -->
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="switchTab('salary', this)">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="4" width="20" height="16" rx="2"/>
-                <line x1="12" y1="4" x2="12" y2="20"/>
+                <rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/>
             </svg>
             <span>Maaş</span>
         </button>
@@ -320,9 +329,7 @@
         </button>
         <button class="nav-item" onclick="switchTab('inflation', this)">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="20" x2="18" y2="10"/>
-                <line x1="12" y1="20" x2="12" y2="4"/>
-                <line x1="6" y1="20" x2="6" y2="14"/>
+                <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
             </svg>
             <span>Enflasyon</span>
         </button>
