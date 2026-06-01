@@ -8,22 +8,10 @@
 </head>
 <body>
 
-    <!-- GÜNCELLEME UYARI PENCERESİ (MODAL) -->
-    <div id="update-modal" class="update-modal-overlay hidden">
-        <div class="update-modal-content">
-            <h3>🚀 Yeni Güncelleme Var!</h3>
-            <p>BordroApp uygulamasının yeni bir sürümü yayınlandı. Yeni özellikleri kullanmak için lütfen güncelleyin.</p>
-            <div class="update-modal-buttons">
-                <button class="btn btn-purple" onclick="redirectToUpdate()">Şimdi Güncelle</button>
-                <button class="btn btn-secondary" onclick="closeUpdateModal()">Daha Sonra</button>
-            </div>
-        </div>
-    </div>
-
     <!-- ANA İÇERİK ALANI -->
     <main class="app-content">
 
-        <!-- SEKME 1: MAAŞ HESAPLAMA -->
+        <!-- SEKME 1: MAAŞ HESAPLAMA (BİREBİR EKRAN GÖRÜNTÜSÜ KLONU) -->
         <section id="tab-salary" class="tab-panel active">
             <header class="app-header-title">
                 <h1>Maaş Hesaplama 2026</h1>
@@ -33,7 +21,7 @@
                 <div class="form-group row">
                     <div class="col">
                         <label>DÖNEM (AY)</label>
-                        <select id="calc-month" onchange="updateExemptionAndCalculate()">
+                        <select id="calc-month" onchange="autoSetCumulativeAndCalculate()">
                             <option value="1">Ocak</option>
                             <option value="2" selected>Şubat</option>
                             <option value="3">Mart</option>
@@ -50,12 +38,10 @@
                     </div>
                     <div class="col">
                         <label>VERGİ DİLİMİ</label>
-                        <select id="tax-bracket" onchange="updateExemptionAndCalculate()">
+                        <select id="tax-bracket" onchange="calculateBordro()">
                             <option value="15" selected>15</option>
                             <option value="20">20</option>
                             <option value="27">27</option>
-                            <option value="35">35</option>
-                            <option value="40">40</option>
                         </select>
                     </div>
                 </div>
@@ -112,10 +98,11 @@
                     <input type="number" id="transport-gross" value="0" oninput="calculateBordro()">
                 </div>
 
+                <!-- GÖSTERGE KUTULARI -->
                 <div class="indicator-grid">
                     <div class="ind-box">
                         <span class="ind-title">VERGİ İSTİNASI</span>
-                        <strong class="ind-value" id="ind-exemption">4.462,03</strong>
+                        <strong class="ind-value" id="ind-exemption">2.805,26</strong>
                     </div>
                     <div class="ind-box">
                         <span class="ind-title">SENDİKA KESİNTİSİ</span>
@@ -131,6 +118,7 @@
                     </div>
                 </div>
 
+                <!-- BÜYÜK MOR BANNER -->
                 <div class="purple-net-banner">
                     <span class="banner-title">Ödenecek Net Maaş</span>
                     <span class="banner-value" id="res-net-salary">0,00 TL</span>
@@ -138,28 +126,28 @@
             </div>
         </section>
 
-        <!-- SEKME 2: SOSYAL HAKLAR -->
+        <!-- SEKME 2: SOSYAL HAKLAR GÖRÜNÜMÜ -->
         <section id="tab-benefits" class="tab-panel">
             <header class="app-header-title">
-                <h1>Sosyal Haklar Rehberi</h1>
+                <h1>Sosyal Haklar Kılavuzu</h1>
             </header>
 
             <div class="card info-card">
-                <h3>Yemek Yardımı (Günlük)</h3>
+                <h3>Yemek Yardımı (Aylık/Günlük)</h3>
                 <div class="comparison-table">
-                    <div class="comp-row"><span>2025 Yılı</span><strong>187,00 TL</strong></div>
-                    <div class="comp-row highlight-purple"><span>2026 Yılı (Resmi Sınır)</span><strong>330,00 TL</strong></div>
+                    <div class="comp-row"><span>2025 Yılı İstisnası</span><strong>187,00 TL</strong></div>
+                    <div class="comp-row highlight-purple"><span>2026 Yılı İstisnası</span><strong>330,00 TL</strong></div>
                 </div>
-                <p class="desc-text">Ayni (yemek kartı) olarak sağlanan yemek yardımlarında vergi muafiyet sınırı günlük 330 TL'dir. 7577 Sayılı Kanun kapsamında nakdi ödemelerde de SGK muafiyeti 300 TL'ye yükseltilmiştir.</p>
+                <p class="desc-text">2026 yılı ayni yemek yardımı (yemek kartı) günlük gelir vergisi istisna sınırı 330 TL'dir. Nakit ödemelerde de SGK muafiyeti 300 TL'ye sabitlenmiştir.</p>
             </div>
 
             <div class="card info-card">
                 <h3>Yol / Ulaşım Yardımı (Günlük)</h3>
                 <div class="comparison-table">
-                    <div class="comp-row"><span>2025 Yılı</span><strong>88,00 TL</strong></div>
-                    <div class="comp-row highlight-purple"><span>2026 Yılı (Ayni Sınır)</span><strong>158,00 TL</strong></div>
+                    <div class="comp-row"><span>2025 Yılı İstisnası</span><strong>88,00 TL</strong></div>
+                    <div class="comp-row highlight-purple"><span>2026 Yılı İstisnası</span><strong>158,00 TL</strong></div>
                 </div>
-                <p class="desc-text">İşveren tarafından sağlanan toplu taşıma kartı veya servis yardımları günlük 158 TL'ye kadar gelir vergisinden tamamen istisnadır.</p>
+                <p class="desc-text">İşveren tarafından sağlanan toplu taşıma kartı veya servis yardımları günlük 158 TL'ye kadar gelir vergisinden istisnadır.</p>
             </div>
 
             <div class="card info-card">
@@ -168,16 +156,16 @@
                     <div class="comp-row"><span>2025 Yılı (SGK İstisnası)</span><strong>2.000,25 TL</strong></div>
                     <div class="comp-row highlight-purple"><span>2026 Yılı (SGK İstisnası)</span><strong>3.303,00 TL</strong></div>
                 </div>
-                <p class="desc-text">Çalışmayan eş için ödenen aile yardımlarında, asgari ücretin %10'u kadarlık kısım (3.303,00 TL) SGK prim kesintisinden muaf tutulmaktadır.</p>
+                <p class="desc-text">Eşi çalışmayan personele ödenen aile yardımlarında, asgari ücretin %10'u kadarlık kısım (3.303,00 TL) SGK prim kesintisinden muaftır.</p>
             </div>
 
             <div class="card info-card">
-                <h3>Çocuk Yardımı (Çocuk Başı/Aylık)</h3>
+                <h3>Çocuk Yardımı (Aylık)</h3>
                 <div class="comparison-table">
                     <div class="comp-row"><span>2025 Yılı (SGK İstisnası)</span><strong>400,05 TL</strong></div>
                     <div class="comp-row highlight-purple"><span>2026 Yılı (SGK İstisnası)</span><strong>660,60 TL</strong></div>
                 </div>
-                <p class="desc-text">En fazla iki çocukla sınırlı olmak üzere çocuk başına asgari ücretin %2'si oranında (660,60 TL) SGK istisnası uygulanır. Vergi muafiyeti ise 0-6 yaş için aylık 693,94 TL'dir.</p>
+                <p class="desc-text">En fazla iki çocukla sınırlı olmak üzere çocuk başına asgari ücretin %2'si oranında (660,60 TL) SGK istisnası uygulanır.</p>
             </div>
         </section>
 
@@ -200,7 +188,7 @@
             <div class="card">
                 <div class="card-header">
                     <h2>Saat Ücreti Zam Robotu</h2>
-                    <p class="subtitle">Mevcut saat ücretinizin kümülatif enflasyona göre değişimi</p>
+                    <p class="subtitle">Saat ücretinizin kümülatif enflasyona göre değişimi</p>
                 </div>
 
                 <div class="form-group">
@@ -224,7 +212,7 @@
         <!-- SEKME 4: MESAJLAR & E-POSTA -->
         <section id="tab-messages" class="tab-panel">
             <header class="app-header-title">
-                <h1>Mesaj Gönder</h1>
+                <h1>Geri Bildirim</h1>
             </header>
 
             <div class="card chat-card">
@@ -234,7 +222,7 @@
                 </div>
                 <div class="form-group">
                     <label>Mesajınız:</label>
-                    <textarea id="chat-textarea" rows="4" placeholder="Buraya mesajınızı yazın..."></textarea>
+                    <textarea id="chat-textarea" rows="4" placeholder="Mesajınızı buraya yazın..."></textarea>
                 </div>
                 <button class="btn btn-purple" onclick="sendMailAndRender()">Mesaj Gönder (E-Posta)</button>
 
