@@ -1,5 +1,5 @@
 // GÜNCELLEME KONTROL SİSTEMİ PARAMETRELERİ
-const CURRENT_VERSION = "1.0.0"; // Telefondaki sürüm
+const CURRENT_VERSION = "1.0.0"; 
 let updateDownloadUrl = "https://github.com/numan067/BordroApp/actions";
 
 // SEKME DEĞİŞTİRİCİ
@@ -25,12 +25,12 @@ function formatRawTL(value) {
 // UYGULAMA İLK AÇILIŞINDA ÇALIŞACAK BLOK
 window.onload = function() {
     autoSetCumulativeAndCalculate();
-    checkForAppUpdates(); // Güncelleme kontrolü
+    checkForAppUpdates(); 
 };
 
 // OTOMATİK SÜRÜM GÜNCELLEME SORGULAYICI
 async function checkForAppUpdates() {
-    if (!navigator.onLine) return; // İnternet yoksa es geç
+    if (!navigator.onLine) return; 
 
     try {
         const response = await fetch("https://raw.githubusercontent.com/numan067/BordroApp/main/version.json");
@@ -38,7 +38,6 @@ async function checkForAppUpdates() {
 
         const data = await response.json();
         
-        // Sürümleri karşılaştır
         if (compareVersions(data.version, CURRENT_VERSION)) {
             updateDownloadUrl = data.downloadUrl || updateDownloadUrl;
             showUpdateModal();
@@ -48,7 +47,7 @@ async function checkForAppUpdates() {
     }
 }
 
-// SÜRÜM KARŞILAŞTIRICI
+// SÜRÜM KIYASLAYICI
 function compareVersions(remote, local) {
     const rParts = remote.split('.').map(Number);
     const lParts = local.split('.').map(Number);
@@ -90,7 +89,7 @@ function autoSetCumulativeAndCalculate() {
     calculateBordro();
 }
 
-// BİREBİR İLETİLEN RESMİ FORMÜLLERLE BORDRO HESAPLAMA MOTORU
+// KURUŞU KURUŞUNA RESMİ FORMÜL ROBOTU (İLETİLEN YENİ MEVZUAT ŞABLONU)
 function calculateBordro() {
     const taxRate = parseFloat(document.getElementById('tax-bracket').value) / 100;
     const hourlyRate = parseFloat(document.getElementById('hourly-rate').value) || 0;
@@ -109,16 +108,16 @@ function calculateBordro() {
     // 1. Saatlik Yalın Ücret
     const saatlikUcret = hourlyRate;
 
-    // 2. Mesailerin, Gece Vardiyasının ve İkramiyenin Brütleştirilmesi
+    // 2. Brütlerin Hesaplanması
     const calismaBrutu = monthlyHours * saatlikUcret;
     const brutTemelMaas = saatlikUcret * monthlyHours; // Brüt Temel Maaş = Saatlik Ücret × Aylık Çalışma Saati
     
-    const fazlaMesaiBrutu = overtimeHours * 2.0 * saatlikUcret; // %200
-    const ulusalBayramBrutu = nationalHolidayHours * 2.0 * saatlikUcret; // %200
-    const diniBayramBrutu = religiousHolidayHours * 3.5 * saatlikUcret; // %350
-    const resmiTatilFazlaMesaiBrutu = officialHolidayOvertime * 3.0 * saatlikUcret; // %300
+    const fazlaMesaiBrutu = overtimeHours * 2.0 * saatlikUcret; // %200 Çarpanı (2.0)
+    const ulusalBayramBrutu = nationalHolidayHours * 2.0 * saatlikUcret; // %200 Çarpanı (2.0)
+    const diniBayramBrutu = religiousHolidayHours * 3.5 * saatlikUcret; // %350 Çarpanı (3.5)
+    const resmiTatilFazlaMesaiBrutu = officialHolidayOvertime * 3.0 * saatlikUcret; // %300 Çarpanı (3.0)
     
-    const geceVardiyasiBrutu = nightHours * (saatlikUcret * 0.10); // Saatlik gece vardiyası farkı (%10)
+    const geceVardiyasiBrutu = nightHours * (saatlikUcret * 0.10); // %10 Gece vardiyası farkı
     const ikramiyeBrutu = saatlikUcret * 225; // İkramiye Brütü = Saatlik Ücret × 225
     
     const besBrut = besNet / (1 - 0.00759);
@@ -153,7 +152,7 @@ function calculateBordro() {
     const ikramiyeDamga = ikramiyeBrutu * 0.00759;
     const netBonus = Math.max(0, ikramiyeBrutu - ikramiyeSgk - ikramiyeIssizlik - ikramiyeVergi - ikramiyeDamga);
 
-    // PANEL GÖSTERGELERİNE KURULUŞUNA YAZDIRMA
+    // PANEL GÖSTERGELERİNE YAZDIRMA
     document.getElementById('ind-exemption').innerText = formatRawTL(2805.26);
     document.getElementById('ind-union').innerText = formatRawTL(sendikaKesintisi);
     document.getElementById('ind-vakif').innerText = formatRawTL(vakifKesintisi);
@@ -161,7 +160,7 @@ function calculateBordro() {
     document.getElementById('res-net-salary').innerText = formatTL(finalNetSalary);
 }
 
-// SAAT ÜCRETİ VE ENFLASYON HESAPLAYICI (YENİ SADE MANTIK - ÇALIŞMA SAATİSİZ)
+// ENFLASYON SAAT ÜCRETİ HESABI (SADE MANTIK - ÇALIŞMA SAATİSİZ)
 function calculateHourlyInflation() {
     const hourlyRate = parseFloat(document.getElementById('hourly-rate-input').value) || 0;
     if (hourlyRate <= 0) {
@@ -170,7 +169,6 @@ function calculateHourlyInflation() {
         return;
     }
 
-    // 4 Aylık Kümülatif Enflasyon Oranı: %14,64
     const inflationRate = 14.64 / 100;
     const hourlyIncrease = hourlyRate * inflationRate;
     const newHourlyRate = hourlyRate + hourlyIncrease;
@@ -179,8 +177,8 @@ function calculateHourlyInflation() {
     document.getElementById('res-hourly-diff').innerText = "+ " + formatTL(hourlyIncrease);
 }
 
-// GERİ BİLDİRİM VE DOĞRUDAN MAİL GÖNDERİMİ (numan067@gmail.com)
-function sendMailAndRender() {
+// GERİ BİLDİRİMİ SADECE SAYFA İÇİ LİSTEDE BİRİKTİRME (MAİL GÖNDERME YOK)
+function sendMessageLocally() {
     const textNode = document.getElementById('chat-textarea');
     const msgList = document.getElementById('message-list');
     const noMsgText = document.getElementById('no-msg-text');
@@ -190,18 +188,15 @@ function sendMailAndRender() {
 
     if (noMsgText) noMsgText.style.display = 'none';
 
+    // Yeni mesaj düğümünü ekle
     const msgBubble = document.createElement('div');
     msgBubble.className = 'single-message-node';
     msgBubble.innerHTML = `<strong>Gönderildi:</strong> ${message}`;
     msgList.appendChild(msgBubble);
 
+    // Listeyi en aşağı kaydır
     msgList.scrollTop = msgList.scrollHeight;
 
-    // Doğrudan e-posta taslağını tetikleme
-    const emailTo = "numan067@gmail.com";
-    const subject = "BordroApp Geri Bildirim";
-    const mailtoUrl = `mailto:${emailTo}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
-    
-    window.location.href = mailtoUrl;
+    // Metin alanını temizle
     textNode.value = '';
 }
