@@ -25,7 +25,7 @@ body {
     padding-bottom: 75px;
 }
 
-/* GÜNCELLEME MODALI TASARIMI */
+/* GÜNCELLEME MODAL */
 .update-modal-overlay {
     position: fixed;
     top: 0; left: 0;
@@ -37,7 +37,6 @@ body {
     justify-content: center;
     z-index: 9999;
     padding: 20px;
-    animation: fadeIn 0.3s ease;
 }
 
 .update-modal-content {
