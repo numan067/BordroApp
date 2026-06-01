@@ -266,19 +266,37 @@ input:focus, select:focus, textarea:focus {
     overflow-x: auto;
 }
 
-.social-table {
+.table-card-premium {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.social-header-title {
+    text-align: center;
+    color: var(--purple-primary);
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+}
+
+.social-table-premium {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.85rem;
     text-align: left;
+    margin-bottom: 20px;
 }
 
-.social-table th, .social-table td {
-    padding: 11px 12px;
+.social-table-premium th, .social-table-premium td {
+    padding: 12px 14px;
     border-bottom: 1px solid #e2e8f0;
 }
 
-.social-table th {
+.social-table-premium th {
     background-color: var(--purple-primary);
     color: #ffffff;
     font-weight: 700;
@@ -286,13 +304,33 @@ input:focus, select:focus, textarea:focus {
     font-size: 0.75rem;
 }
 
-.social-table tr:nth-child(even) {
-    background-color: #f8fafc;
+.social-table-premium th:first-child {
+    border-top-left-radius: 8px;
+}
+
+.social-table-premium th:last-child {
+    border-top-right-radius: 8px;
+}
+
+.social-table-premium tr:nth-child(even) {
+    background-color: #faf5ff; /* Klon satır arkaplan tonu */
 }
 
 .text-purple-bold {
     color: var(--purple-primary);
     font-weight: 700;
+}
+
+.btn-return-home {
+    margin-top: 15px;
+    background: var(--purple-primary);
+    color: #ffffff;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 12px;
+    border: none;
+    width: 100%;
 }
 
 /* SOHBET SİSTEMİ */
