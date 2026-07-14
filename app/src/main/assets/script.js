@@ -74,7 +74,7 @@ function redirectToUpdate() {
     window.open(updateDownloadUrl, "_blank");
 }
 
-// SEÇİLEN AYA GÖRE ÇALIŞMA SAATİNİ OTOMATİK GÜNCELLE (Gün Sayısı × 7,5)
+// SEÇİLEN AYA GÖRE ÇALIŞMA SAATİNİ OTOMATİK GÜNCELLE (Ay Gün Sayısı × 7,5)
 function autoSetCumulativeAndCalculate() {
     const month = parseInt(document.getElementById('calc-month').value);
     const hoursInput = document.getElementById('monthly-hours');
@@ -109,23 +109,28 @@ function calculateBordro() {
     const saatlikUcret = hourlyRate;
 
     // 2. Brütlerin Hesaplanması
-    const calismaBrutu = monthlyHours * saatlikUcret;
-    const brutTemelMaas = saatlikUcret * monthlyHours; // Brüt Temel Maaş = Saatlik Ücret × Aylık Çalışma Saati
+    const calismaBrutu = monthlyHours * saatlikUcret; // Çalışma Brütü
     
     const fazlaMesaiBrutu = overtimeHours * 2.0 * saatlikUcret; // %200 Çarpanı (2.0)
     const ulusalBayramBrutu = nationalHolidayHours * 2.0 * saatlikUcret; // %200 Çarpanı (2.0)
     const diniBayramBrutu = religiousHolidayHours * 3.5 * saatlikUcret; // %350 Çarpanı (3.5)
     const resmiTatilFazlaMesaiBrutu = officialHolidayOvertime * 3.0 * saatlikUcret; // %300 Çarpanı (3.0)
     
-    const geceVardiyasiBrutu = nightHours * (saatlikUcret * 0.10); // %10 Gece vardiyası farkı
-    const ikramiyeBrutu = saatlikUcret * 225; // İkramiye Brütü = Saatlik Ücret × 225
+    // Gece Vardiyası Zammı 2026 yılı için saatlik sabit 30 TL'dir (Tablo ile uyumlu)
+    const geceVardiyasiBrutu = nightHours * 30.00; 
     
+    // İkramiye Brütü (Maaş döküm göstergesi için)
+    const ikramiyeBrutu = saatlikUcret * 225; 
+    
+    // Şahsi Kesintiler ve BES Brütleştirmesi
     const besBrut = besNet / (1 - 0.00759);
     const vakifKesintisi = calismaBrutu * vakifPercent / 100;
-    const sendikaKesintisi = saatlikUcret * 7; // Sendika Kesintisi = Saatlik Ücret × 7
+    const sendikaKesintisi = saatlikUcret * 7; 
 
-    // 3. Toplam Brüt Kazanç (Vergi ve SGK Havuzu)
-    const totalGross = brutTemelMaas + calismaBrutu + fazlaMesaiBrutu + ulusalBayramBrutu + diniBayramBrutu + resmiTatilFazlaMesaiBrutu + geceVardiyasiBrutu + ikramiyeBrutu + besBrut;
+    // 3. Toplam Aylık Brüt Kazanç (Maaş Havuzu)
+    // HATA DÜZELTME: Temel maaşın iki kez toplanmasını önlemek için "brutTemelMaas" kaldırıldı, sadece "calismaBrutu" eklendi.
+    // HATA DÜZELTME: İkramiye her ay alınmadığı için aylık Net Maaş havuzundan çıkarıldı, bağımsız göstergeye dönüştürüldü.
+    const totalGross = calismaBrutu + fazlaMesaiBrutu + ulusalBayramBrutu + diniBayramBrutu + resmiTatilFazlaMesaiBrutu + geceVardiyasiBrutu + besBrut + transportGross;
 
     // 4. Yasal Kesintilerin Bulunması
     const sgkKesintisi = totalGross * 0.14;
@@ -144,7 +149,7 @@ function calculateBordro() {
     const netSalary = totalGross - sgkKesintisi - issizlikKesintisi - odenecekGelirVergisi - odenecekDamgaVergisi - sendikaKesintisi - vakifKesintisi - besNet;
     const finalNetSalary = Math.max(0, netSalary);
 
-    // İkramiyenin Netleştirilmesi (30 Günlük Net İkramiye Değeri)
+    // 30 Günlük Net İkramiye (Yalnızca gösterge kutusunda gösterilir)
     const ikramiyeSgk = ikramiyeBrutu * 0.14;
     const ikramiyeIssizlik = ikramiyeBrutu * 0.01;
     const ikramiyeMatrah = ikramiyeBrutu - (ikramiyeSgk + ikramiyeIssizlik);
@@ -152,7 +157,7 @@ function calculateBordro() {
     const ikramiyeDamga = ikramiyeBrutu * 0.00759;
     const netBonus = Math.max(0, ikramiyeBrutu - ikramiyeSgk - ikramiyeIssizlik - ikramiyeVergi - ikramiyeDamga);
 
-    // PANEL GÖSTERGELERİNE YAZDIRMA
+    // PANEL GÖSTERGELERİNE KURULUŞUNA YAZDIRMA
     document.getElementById('ind-exemption').innerText = formatRawTL(2805.26);
     document.getElementById('ind-union').innerText = formatRawTL(sendikaKesintisi);
     document.getElementById('ind-vakif').innerText = formatRawTL(vakifKesintisi);
