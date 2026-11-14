@@ -1,5 +1,5 @@
 // GÜNCELLEME KONTROL SİSTEMİ PARAMETRELERİ
-const CURRENT_VERSION = "1.0.0"; 
+const CURRENT_VERSION = "1.0.0";
 let updateDownloadUrl = "https://github.com/numan067/BordroApp/actions";
 
 // SEKME DEĞİŞTİRİCİ
@@ -22,22 +22,43 @@ function formatRawTL(value) {
     return value.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+// Aylık vergi istisnaları (2026) — hesaplamada ve ekranda aynı değerler kullanılır.
+const MONTH_VALUES = [
+    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 }, // Ocak
+    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 }, // Şubat
+    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 }, // Mart
+    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 }, // Nisan
+    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 }, // Mayıs
+    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 }, // Haziran
+    { incomeTaxExemption: 4537.75, stampTaxExemption: 250.70 }, // Temmuz
+    { incomeTaxExemption: 5615.10, stampTaxExemption: 250.70 }, // Ağustos
+    { incomeTaxExemption: 5615.10, stampTaxExemption: 250.70 }, // Eylül
+    { incomeTaxExemption: 5615.10, stampTaxExemption: 250.70 }, // Ekim
+    { incomeTaxExemption: 5615.10, stampTaxExemption: 250.70 }, // Kasım
+    { incomeTaxExemption: 5615.10, stampTaxExemption: 250.70 }  // Aralık
+];
+
+function getSelectedMonthValues() {
+    const monthIndex = Number.parseInt(document.getElementById('calc-month').value, 10) - 1;
+    return MONTH_VALUES[Math.max(0, Math.min(11, monthIndex))];
+}
+
 // UYGULAMA İLK AÇILIŞINDA ÇALIŞACAK BLOK
 window.onload = function() {
     autoSetCumulativeAndCalculate();
-    checkForAppUpdates(); 
+    checkForAppUpdates();
 };
 
 // OTOMATİK SÜRÜM GÜNCELLEME SORGULAYICI
 async function checkForAppUpdates() {
-    if (!navigator.onLine) return; 
+    if (!navigator.onLine) return;
 
     try {
         const response = await fetch("https://raw.githubusercontent.com/numan067/BordroApp/main/version.json");
         if (!response.ok) return;
 
         const data = await response.json();
-        
+
         if (compareVersions(data.version, CURRENT_VERSION)) {
             updateDownloadUrl = data.downloadUrl || updateDownloadUrl;
             showUpdateModal();
@@ -74,95 +95,81 @@ function redirectToUpdate() {
     window.open(updateDownloadUrl, "_blank");
 }
 
-// SEÇİLEN AYA GÖRE ÇALIŞMA SAATİNİ OTOMATİK GÜNCELLE (Ay Gün Sayısı × 7,5)
+// Seçilen aya göre çalışma saatini otomatik güncelle (ay gün sayısı × 7,5).
 function autoSetCumulativeAndCalculate() {
-    const month = parseInt(document.getElementById('calc-month').value);
+    const month = Number.parseInt(document.getElementById('calc-month').value, 10);
     const hoursInput = document.getElementById('monthly-hours');
-
-    // Ayların Gün Sayıları (2026 yılına göre)
     const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    const days = monthDays[month - 1];
+    const days = monthDays[Math.max(0, Math.min(11, month - 1))];
 
-    // Aylık Çalışma Saati = Gün Sayısı × 7,5
-    hoursInput.value = (days * 7.5);
+    hoursInput.value = days * 7.5;
+    updateExemptionAndCalculate();
+}
 
+// Ay değişince vergi istisnası göstergesini de yenile.
+function updateExemptionAndCalculate() {
+    const month = getSelectedMonthValues();
+    document.getElementById('ind-exemption').innerText = formatRawTL(
+        month.incomeTaxExemption + month.stampTaxExemption
+    );
     calculateBordro();
 }
 
-// KURUŞU KURUŞUNA RESMİ FORMÜL ROBOTU (İLETİLEN YENİ MEVZUAT ŞABLONU)
+// Bordro hesaplaması
 function calculateBordro() {
-    const taxRate = parseFloat(document.getElementById('tax-bracket').value) / 100;
-    const hourlyRate = parseFloat(document.getElementById('hourly-rate').value) || 0;
-    const monthlyHours = parseFloat(document.getElementById('monthly-hours').value) || 0;
-    
-    const nightHours = parseFloat(document.getElementById('night-hours').value) || 0;
-    const overtimeHours = parseFloat(document.getElementById('overtime-hours').value) || 0;
-    const nationalHolidayHours = parseFloat(document.getElementById('national-holiday-hours').value) || 0;
-    const religiousHolidayHours = parseFloat(document.getElementById('religious-holiday-hours').value) || 0;
-    const officialHolidayOvertime = parseFloat(document.getElementById('official-holiday-overtime').value) || 0;
-    
-    const besNet = parseFloat(document.getElementById('bes-deduction').value) || 0;
-    const vakifPercent = parseFloat(document.getElementById('vakif-percent').value) || 0;
-    const transportGross = parseFloat(document.getElementById('transport-gross').value) || 0;
+    const month = getSelectedMonthValues();
+    const taxRate = (Number.parseFloat(document.getElementById('tax-bracket').value) || 0) / 100;
+    const hourlyRate = Number.parseFloat(document.getElementById('hourly-rate').value) || 0;
+    const monthlyHours = Number.parseFloat(document.getElementById('monthly-hours').value) || 0;
+    const nightHours = Number.parseFloat(document.getElementById('night-hours').value) || 0;
+    const overtimeHours = Number.parseFloat(document.getElementById('overtime-hours').value) || 0;
+    const nationalHolidayHours = Number.parseFloat(document.getElementById('national-holiday-hours').value) || 0;
+    const religiousHolidayHours = Number.parseFloat(document.getElementById('religious-holiday-hours').value) || 0;
+    const officialHolidayHours = Number.parseFloat(document.getElementById('official-holiday-overtime').value) || 0;
+    const besDeduction = Number.parseFloat(document.getElementById('bes-deduction').value) || 0;
+    const vakifPercent = Number.parseFloat(document.getElementById('vakif-percent').value) || 0;
+    const transportGross = Number.parseFloat(document.getElementById('transport-gross').value) || 0;
 
-    // 1. Saatlik Yalın Ücret
-    const saatlikUcret = hourlyRate;
+    // Ana çalışma brütü
+    const baseGross = hourlyRate * monthlyHours;
 
-    // 2. Brütlerin Hesaplanması
-    const calismaBrutu = monthlyHours * saatlikUcret; // Çalışma Brütü
-    
-    const fazlaMesaiBrutu = overtimeHours * 2.0 * saatlikUcret; // %200 Çarpanı (2.0)
-    const ulusalBayramBrutu = nationalHolidayHours * 2.0 * saatlikUcret; // %200 Çarpanı (2.0)
-    const diniBayramBrutu = religiousHolidayHours * 3.5 * saatlikUcret; // %350 Çarpanı (3.5)
-    const resmiTatilFazlaMesaiBrutu = officialHolidayOvertime * 3.0 * saatlikUcret; // %300 Çarpanı (3.0)
-    
-    // Gece Vardiyası Zammı 2026 yılı için saatlik sabit 30 TL'dir (Tablo ile uyumlu)
-    const geceVardiyasiBrutu = nightHours * 30.00; 
-    
-    // İkramiye Brütü (Maaş döküm göstergesi için)
-    const ikramiyeBrutu = saatlikUcret * 225; 
-    
-    // Şahsi Kesintiler ve BES Brütleştirmesi
-    const besBrut = besNet / (1 - 0.00759);
-    const vakifKesintisi = calismaBrutu * vakifPercent / 100;
-    const sendikaKesintisi = saatlikUcret * 7; 
+    // Mesai çarpanları: fazla mesai/ulusal bayram %200, dini bayram %250,
+    // resmi tatil fazla mesaisi %300.
+    const overtimeGross =
+        ((overtimeHours + nationalHolidayHours) * hourlyRate * 2.0) +
+        (religiousHolidayHours * hourlyRate * 2.5) +
+        (officialHolidayHours * hourlyRate * 3.0);
 
-    // 3. Toplam Aylık Brüt Kazanç (Maaş Havuzu)
-    // HATA DÜZELTME: Temel maaşın iki kez toplanmasını önlemek için "brutTemelMaas" kaldırıldı, sadece "calismaBrutu" eklendi.
-    // HATA DÜZELTME: İkramiye her ay alınmadığı için aylık Net Maaş havuzundan çıkarıldı, bağımsız göstergeye dönüştürüldü.
-    const totalGross = calismaBrutu + fazlaMesaiBrutu + ulusalBayramBrutu + diniBayramBrutu + resmiTatilFazlaMesaiBrutu + geceVardiyasiBrutu + besBrut + transportGross;
+    const nightGross = nightHours * 30.0;
+    const gross = baseGross + overtimeGross + nightGross + transportGross;
 
-    // 4. Yasal Kesintilerin Bulunması
-    const sgkKesintisi = totalGross * 0.14;
-    const issizlikKesintisi = totalGross * 0.01;
-    
-    const taxBase = totalGross - (sgkKesintisi + issizlikKesintisi);
-    
-    const brutGelirVergisi = taxBase * taxRate;
-    const brutDamgaVergisi = totalGross * 0.00759;
+    const sgk = gross * 0.14;
+    const unemployment = gross * 0.01;
+    const unionDeduction = hourlyRate * 7.0;
+    const incomeTaxBase = gross - sgk - unemployment - unionDeduction;
+    const incomeTax = Math.max(0, incomeTaxBase * taxRate - month.incomeTaxExemption);
+    const stampTax = Math.max(0, gross * 0.00759 - month.stampTaxExemption);
+    const vakifNet = baseGross * vakifPercent / 100;
 
-    // Sabit İstisnaların Uygulanması
-    const odenecekGelirVergisi = Math.max(0, brutGelirVergisi - 2805.26);
-    const odenecekDamgaVergisi = Math.max(0, brutDamgaVergisi - 167.00);
+    const netSalary = gross - sgk - unemployment - incomeTax - stampTax -
+        unionDeduction - vakifNet - besDeduction;
 
-    // 5. Final: Net Maaşın Çıkışı
-    const netSalary = totalGross - sgkKesintisi - issizlikKesintisi - odenecekGelirVergisi - odenecekDamgaVergisi - sendikaKesintisi - vakifKesintisi - besNet;
-    const finalNetSalary = Math.max(0, netSalary);
+    // 30 günlük net ikramiye (gösterge)
+    const bonusGross = hourlyRate * 30.0 * 7.5;
+    const bonusSgk = bonusGross * 0.14;
+    const bonusUnemployment = bonusGross * 0.01;
+    const bonusTaxBase = bonusGross - bonusSgk - bonusUnemployment;
+    const bonusIncomeTax = bonusTaxBase * taxRate;
+    const bonusStampTax = bonusGross * 0.00759;
+    const netBonus = bonusGross - bonusSgk - bonusUnemployment - bonusIncomeTax - bonusStampTax;
 
-    // 30 Günlük Net İkramiye (Yalnızca gösterge kutusunda gösterilir)
-    const ikramiyeSgk = ikramiyeBrutu * 0.14;
-    const ikramiyeIssizlik = ikramiyeBrutu * 0.01;
-    const ikramiyeMatrah = ikramiyeBrutu - (ikramiyeSgk + ikramiyeIssizlik);
-    const ikramiyeVergi = ikramiyeMatrah * taxRate;
-    const ikramiyeDamga = ikramiyeBrutu * 0.00759;
-    const netBonus = Math.max(0, ikramiyeBrutu - ikramiyeSgk - ikramiyeIssizlik - ikramiyeVergi - ikramiyeDamga);
-
-    // PANEL GÖSTERGELERİNE KURULUŞUNA YAZDIRMA
-    document.getElementById('ind-exemption').innerText = formatRawTL(2805.26);
-    document.getElementById('ind-union').innerText = formatRawTL(sendikaKesintisi);
-    document.getElementById('ind-vakif').innerText = formatRawTL(vakifKesintisi);
+    document.getElementById('ind-exemption').innerText = formatRawTL(
+        month.incomeTaxExemption + month.stampTaxExemption
+    );
+    document.getElementById('ind-union').innerText = formatRawTL(unionDeduction);
+    document.getElementById('ind-vakif').innerText = formatRawTL(vakifNet);
     document.getElementById('ind-bonus').innerText = formatRawTL(netBonus);
-    document.getElementById('res-net-salary').innerText = formatTL(finalNetSalary);
+    document.getElementById('res-net-salary').innerText = formatTL(netSalary);
 }
 
 // ENFLASYON SAAT ÜCRETİ HESABI (SADE MANTIK - ÇALIŞMA SAATİSİZ)
