@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 600" role="img" aria-labelledby="title desc">
+  <title id="title">Bordro Hesaplama</title>
+  <desc id="desc">Bordro Hesaplama uygulamasının mavi yükselen oklar ve sarı yazıdan oluşan logosu, beyaz arka plan üzerinde.</desc>
+  <rect width="720" height="600" fill="#fff"/>
+  <g transform="translate(0 10)">
+    <path d="M190 335 255 245l65 90h-37v111h-55V335z" fill="#0876c9"/>
+    <path d="M286 278 365 168l79 110h-45v178h-67V278z" fill="#0795d0"/>
+    <path d="M401 225 480 105l79 120h-45v231h-68V225z" fill="#08b8dc"/>
+    <path d="M226 304c20 21 44 31 71 31v111h-69V335h-37z" fill="#0756a6" opacity=".55"/>
+    <path d="M365 220c23 27 52 39 88 39v197h-68V278h-45z" fill="#0064ae" opacity=".45"/>
+  </g>
+  <text x="360" y="465" text-anchor="middle" font-family="Arial, sans-serif" font-size="104" font-weight="900" letter-spacing="-5" fill="#ffdc26" stroke="#07577c" stroke-width="12" paint-order="stroke">BORDRO</text>
+  <text x="360" y="520" text-anchor="middle" font-family="Arial, sans-serif" font-size="35" font-weight="500" letter-spacing="18" fill="#07577c">HESAPLAMA</text>
+</svg>
