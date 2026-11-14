@@ -1,15 +1,12 @@
 // GÜNCELLEME KONTROL SİSTEMİ PARAMETRELERİ
 const CURRENT_VERSION = "1.0.0";
 let updateDownloadUrl = "https://github.com/numan067/BordroApp/actions";
+let configuredInflationRate = 14.64;
 
 // SEKME DEĞİŞTİRİCİ
 function switchTab(tabId, element) {
-    document.querySelectorAll('.tab-panel').forEach(panel => {
-        panel.classList.remove('active');
-    });
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.remove('active');
-    });
+    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
     document.getElementById(`tab-${tabId}`).classList.add('active');
     element.classList.add('active');
 }
@@ -47,18 +44,85 @@ function getSelectedMonthValues() {
 window.onload = function() {
     autoSetCumulativeAndCalculate();
     checkForAppUpdates();
+    loadCachedRemoteContent();
 };
+
+// Uzaktan yönetilen sosyal yardım ve enflasyon verileri.
+// Android'de veri native katmandan alınır; tarayıcıda yerel içerik yedeği korunur.
+function loadCachedRemoteContent() {
+    try {
+        if (window.BordroNative && typeof window.BordroNative.getCachedContent === 'function') {
+            const cached = window.BordroNative.getCachedContent();
+            if (cached) applyRemoteContent(JSON.parse(cached));
+        }
+    } catch (error) {
+        console.warn('Kayıtlı içerik yüklenemedi:', error);
+    }
+}
+
+function applyRemoteContent(data) {
+    if (!data || !Array.isArray(data.socialBenefits) || !data.inflation ||
+        !Array.isArray(data.inflation.monthly)) return;
+
+    const socialBody = document.querySelector('.social-table-premium tbody');
+    if (socialBody) {
+        socialBody.replaceChildren();
+        data.socialBenefits.forEach(item => {
+            const row = document.createElement('tr');
+            [item.name, item.year2025, item.year2026].forEach((value, index) => {
+                const cell = document.createElement('td');
+                cell.textContent = String(value ?? '');
+                if (index === 2) cell.className = 'text-purple-bold';
+                row.appendChild(cell);
+            });
+            socialBody.appendChild(row);
+        });
+        const headings = document.querySelectorAll('.social-table-premium thead th');
+        if (headings.length >= 3) {
+            headings[1].textContent = String(data.inflation.year - 1);
+            headings[2].textContent = String(data.inflation.year);
+        }
+    }
+
+    const inflation = data.inflation;
+    const inflationTitle = document.getElementById('inflation-title');
+    if (inflationTitle) inflationTitle.textContent = `${inflation.year} Enflasyon Verileri`;
+
+    const comparisonTable = document.querySelector('.comparison-table');
+    if (comparisonTable) {
+        comparisonTable.replaceChildren();
+        inflation.monthly.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'comp-row';
+            const month = document.createElement('span');
+            month.textContent = `${item.month} ${inflation.year}`;
+            const rate = document.createElement('strong');
+            rate.textContent = `%${Number(item.rate).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            row.append(month, rate);
+            comparisonTable.appendChild(row);
+        });
+        const totalRow = document.createElement('div');
+        totalRow.className = 'comp-row highlight-purple';
+        const totalLabel = document.createElement('span');
+        totalLabel.textContent = `${inflation.monthly.length} AYLIK TOPLAM`;
+        const totalValue = document.createElement('strong');
+        totalValue.textContent = `%${Number(inflation.totalRate).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        totalRow.append(totalLabel, totalValue);
+        comparisonTable.appendChild(totalRow);
+    }
+
+    const newRate = Number(inflation.totalRate);
+    if (Number.isFinite(newRate)) configuredInflationRate = newRate;
+    calculateHourlyInflation();
+}
 
 // OTOMATİK SÜRÜM GÜNCELLEME SORGULAYICI
 async function checkForAppUpdates() {
     if (!navigator.onLine) return;
-
     try {
         const response = await fetch("https://raw.githubusercontent.com/numan067/BordroApp/main/version.json");
         if (!response.ok) return;
-
         const data = await response.json();
-
         if (compareVersions(data.version, CURRENT_VERSION)) {
             updateDownloadUrl = data.downloadUrl || updateDownloadUrl;
             showUpdateModal();
@@ -85,12 +149,10 @@ function showUpdateModal() {
     const modal = document.getElementById('update-modal');
     if (modal) modal.classList.remove('hidden');
 }
-
 function closeUpdateModal() {
     const modal = document.getElementById('update-modal');
     if (modal) modal.classList.add('hidden');
 }
-
 function redirectToUpdate() {
     window.open(updateDownloadUrl, "_blank");
 }
@@ -101,7 +163,6 @@ function autoSetCumulativeAndCalculate() {
     const hoursInput = document.getElementById('monthly-hours');
     const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     const days = monthDays[Math.max(0, Math.min(11, month - 1))];
-
     hoursInput.value = days * 7.5;
     updateExemptionAndCalculate();
 }
@@ -109,9 +170,7 @@ function autoSetCumulativeAndCalculate() {
 // Ay değişince vergi istisnası göstergesini de yenile.
 function updateExemptionAndCalculate() {
     const month = getSelectedMonthValues();
-    document.getElementById('ind-exemption').innerText = formatRawTL(
-        month.incomeTaxExemption + month.stampTaxExemption
-    );
+    document.getElementById('ind-exemption').innerText = formatRawTL(month.incomeTaxExemption + month.stampTaxExemption);
     calculateBordro();
 }
 
@@ -130,16 +189,11 @@ function calculateBordro() {
     const vakifPercent = Number.parseFloat(document.getElementById('vakif-percent').value) || 0;
     const transportGross = Number.parseFloat(document.getElementById('transport-gross').value) || 0;
 
-    // Ana çalışma brütü
     const baseGross = hourlyRate * monthlyHours;
-
-    // Mesai çarpanları: fazla mesai/ulusal bayram %200, dini bayram %250,
-    // resmi tatil fazla mesaisi %300.
     const overtimeGross =
         ((overtimeHours + nationalHolidayHours) * hourlyRate * 2.0) +
         (religiousHolidayHours * hourlyRate * 2.5) +
         (officialHolidayHours * hourlyRate * 3.0);
-
     const nightGross = nightHours * 30.0;
     const gross = baseGross + overtimeGross + nightGross + transportGross;
 
@@ -150,11 +204,8 @@ function calculateBordro() {
     const incomeTax = Math.max(0, incomeTaxBase * taxRate - month.incomeTaxExemption);
     const stampTax = Math.max(0, gross * 0.00759 - month.stampTaxExemption);
     const vakifNet = baseGross * vakifPercent / 100;
+    const netSalary = gross - sgk - unemployment - incomeTax - stampTax - unionDeduction - vakifNet - besDeduction;
 
-    const netSalary = gross - sgk - unemployment - incomeTax - stampTax -
-        unionDeduction - vakifNet - besDeduction;
-
-    // 30 günlük net ikramiye (gösterge)
     const bonusGross = hourlyRate * 30.0 * 7.5;
     const bonusSgk = bonusGross * 0.14;
     const bonusUnemployment = bonusGross * 0.01;
@@ -163,16 +214,14 @@ function calculateBordro() {
     const bonusStampTax = bonusGross * 0.00759;
     const netBonus = bonusGross - bonusSgk - bonusUnemployment - bonusIncomeTax - bonusStampTax;
 
-    document.getElementById('ind-exemption').innerText = formatRawTL(
-        month.incomeTaxExemption + month.stampTaxExemption
-    );
+    document.getElementById('ind-exemption').innerText = formatRawTL(month.incomeTaxExemption + month.stampTaxExemption);
     document.getElementById('ind-union').innerText = formatRawTL(unionDeduction);
     document.getElementById('ind-vakif').innerText = formatRawTL(vakifNet);
     document.getElementById('ind-bonus').innerText = formatRawTL(netBonus);
     document.getElementById('res-net-salary').innerText = formatTL(netSalary);
 }
 
-// ENFLASYON SAAT ÜCRETİ HESABI (SADE MANTIK - ÇALIŞMA SAATİSİZ)
+// ENFLASYON SAAT ÜCRETİ HESABI
 function calculateHourlyInflation() {
     const hourlyRate = parseFloat(document.getElementById('hourly-rate-input').value) || 0;
     if (hourlyRate <= 0) {
@@ -180,11 +229,8 @@ function calculateHourlyInflation() {
         document.getElementById('res-hourly-diff').innerText = "+ 0,00 TL";
         return;
     }
-
-    const inflationRate = 14.64 / 100;
-    const hourlyIncrease = hourlyRate * inflationRate;
+    const hourlyIncrease = hourlyRate * configuredInflationRate / 100;
     const newHourlyRate = hourlyRate + hourlyIncrease;
-
     document.getElementById('res-new-hourly').innerText = formatTL(newHourlyRate);
     document.getElementById('res-hourly-diff').innerText = "+ " + formatTL(hourlyIncrease);
 }
@@ -195,20 +241,14 @@ function sendMessageLocally() {
     const msgList = document.getElementById('message-list');
     const noMsgText = document.getElementById('no-msg-text');
     const message = textNode.value.trim();
-
     if (!message) return;
-
     if (noMsgText) noMsgText.style.display = 'none';
-
-    // Yeni mesaj düğümünü ekle
     const msgBubble = document.createElement('div');
     msgBubble.className = 'single-message-node';
-    msgBubble.innerHTML = `<strong>Gönderildi:</strong> ${message}`;
+    const label = document.createElement('strong');
+    label.textContent = 'Gönderildi: ';
+    msgBubble.append(label, document.createTextNode(message));
     msgList.appendChild(msgBubble);
-
-    // Listeyi en aşağı kaydır
     msgList.scrollTop = msgList.scrollHeight;
-
-    // Metin alanını temizle
     textNode.value = '';
 }
