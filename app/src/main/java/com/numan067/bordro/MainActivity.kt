@@ -69,7 +69,10 @@ class MainActivity : AppCompatActivity() {
                     requestMethod = "GET"
                     connectTimeout = 8000
                     readTimeout = 8000
-                    setRequestProperty("Cache-Control", "no-cache")
+                    setRequestProperty("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
+                    setRequestProperty("Pragma", "no-cache")
+                    setRequestProperty("Expires", "0")
+                    setUseCaches(false)
                 }
 
                 if (connection.responseCode !in 200..299) return@execute
@@ -107,6 +110,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val CONTENT_DATA_URL =
-            "https://raw.githubusercontent.com/numan067/BordroApp/main/app/src/main/assets/content-data.json"
+            "https://bordro.pages.dev/api/content"
     }
 }
