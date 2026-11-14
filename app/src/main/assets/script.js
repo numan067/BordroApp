@@ -1,17 +1,17 @@
-// GÜNCELLEME KONTROL SİSTEMİ PARAMETRELERİ
-const CURRENT_VERSION = "1.0.0";
+// BordroApp sürüm yapılandırması.
+const CURRENT_VERSION = "1.0.2";
 let updateDownloadUrl = "https://github.com/numan067/BordroApp/actions";
-let configuredInflationRate = 14.64;
+let inflationMonthlyRates = [];
+const PUBLIC_MESSAGES_URL = "https://bordro.pages.dev/api/messages";
 
-// SEKME DEĞİŞTİRİCİ
 function switchTab(tabId, element) {
     document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
     document.getElementById(`tab-${tabId}`).classList.add('active');
-    element.classList.add('active');
+    if (element) element.classList.add('active');
+    if (tabId === 'messages') loadPublicMessages();
 }
 
-// PARA BİÇİMLENDİRME
 function formatTL(value) {
     return value.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' TL';
 }
@@ -19,20 +19,19 @@ function formatRawTL(value) {
     return value.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-// Aylık vergi istisnaları (2026) — hesaplamada ve ekranda aynı değerler kullanılır.
 const MONTH_VALUES = [
-    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 }, // Ocak
-    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 }, // Şubat
-    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 }, // Mart
-    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 }, // Nisan
-    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 }, // Mayıs
-    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 }, // Haziran
-    { incomeTaxExemption: 4537.75, stampTaxExemption: 250.70 }, // Temmuz
-    { incomeTaxExemption: 5615.10, stampTaxExemption: 250.70 }, // Ağustos
-    { incomeTaxExemption: 5615.10, stampTaxExemption: 250.70 }, // Eylül
-    { incomeTaxExemption: 5615.10, stampTaxExemption: 250.70 }, // Ekim
-    { incomeTaxExemption: 5615.10, stampTaxExemption: 250.70 }, // Kasım
-    { incomeTaxExemption: 5615.10, stampTaxExemption: 250.70 }  // Aralık
+    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 },
+    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 },
+    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 },
+    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 },
+    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 },
+    { incomeTaxExemption: 4211.33, stampTaxExemption: 250.70 },
+    { incomeTaxExemption: 4537.75, stampTaxExemption: 250.70 },
+    { incomeTaxExemption: 5615.10, stampTaxExemption: 250.70 },
+    { incomeTaxExemption: 5615.10, stampTaxExemption: 250.70 },
+    { incomeTaxExemption: 5615.10, stampTaxExemption: 250.70 },
+    { incomeTaxExemption: 5615.10, stampTaxExemption: 250.70 },
+    { incomeTaxExemption: 5615.10, stampTaxExemption: 250.70 }
 ];
 
 function getSelectedMonthValues() {
@@ -40,15 +39,24 @@ function getSelectedMonthValues() {
     return MONTH_VALUES[Math.max(0, Math.min(11, monthIndex))];
 }
 
-// UYGULAMA İLK AÇILIŞINDA ÇALIŞACAK BLOK
 window.onload = function() {
+    addAppLogo();
     autoSetCumulativeAndCalculate();
     checkForAppUpdates();
     loadCachedRemoteContent();
+    loadPublicMessages();
 };
 
-// Uzaktan yönetilen sosyal yardım ve enflasyon verileri.
-// Android'de veri native katmandan alınır; tarayıcıda yerel içerik yedeği korunur.
+function addAppLogo() {
+    const header = document.querySelector('.app-header-title');
+    if (!header || header.querySelector('.app-logo')) return;
+    const logo = document.createElement('img');
+    logo.className = 'app-logo';
+    logo.src = 'bordro-logo.svg';
+    logo.alt = 'Bordro Hesaplama';
+    header.insertBefore(logo, header.firstChild);
+}
+
 function loadCachedRemoteContent() {
     try {
         if (window.BordroNative && typeof window.BordroNative.getCachedContent === 'function') {
@@ -61,8 +69,8 @@ function loadCachedRemoteContent() {
 }
 
 function applyRemoteContent(data) {
-    if (!data || !Array.isArray(data.socialBenefits) || !data.inflation ||
-        !Array.isArray(data.inflation.monthly)) return;
+    if (!data || !Array.isArray(data.socialBenefits) || !data.inflation || !Array.isArray(data.inflation.monthly)) return;
+    inflationMonthlyRates = data.inflation.monthly;
 
     const socialBody = document.querySelector('.social-table-premium tbody');
     if (socialBody) {
@@ -84,55 +92,75 @@ function applyRemoteContent(data) {
         }
     }
 
-    const inflation = data.inflation;
-    const inflationTitle = document.getElementById('inflation-title');
-    if (inflationTitle) inflationTitle.textContent = `${inflation.year} Enflasyon Verileri`;
-
-    const comparisonTable = document.querySelector('.comparison-table');
-    if (comparisonTable) {
-        comparisonTable.replaceChildren();
-        inflation.monthly.forEach(item => {
-            const row = document.createElement('div');
-            row.className = 'comp-row';
-            const month = document.createElement('span');
-            month.textContent = `${item.month} ${inflation.year}`;
-            const rate = document.createElement('strong');
-            rate.textContent = `%${Number(item.rate).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-            row.append(month, rate);
-            comparisonTable.appendChild(row);
-        });
-        const totalRow = document.createElement('div');
-        totalRow.className = 'comp-row highlight-purple';
-        const totalLabel = document.createElement('span');
-        totalLabel.textContent = `${inflation.monthly.length} AYLIK TOPLAM`;
-        const totalValue = document.createElement('strong');
-        totalValue.textContent = `%${Number(inflation.totalRate).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        totalRow.append(totalLabel, totalValue);
-        comparisonTable.appendChild(totalRow);
-    }
-
-    const newRate = Number(inflation.totalRate);
-    if (Number.isFinite(newRate)) configuredInflationRate = newRate;
+    const title = document.getElementById('inflation-title');
+    if (title) title.textContent = `${data.inflation.year} Enflasyon Verileri`;
+    renderInflation(data.inflation);
     calculateHourlyInflation();
 }
 
-// OTOMATİK SÜRÜM GÜNCELLEME SORGULAYICI
+function calculateJulyToDecemberCompound(monthly) {
+    let factor = 1;
+    for (let monthIndex = 6; monthIndex < 12; monthIndex++) {
+        const rate = Number(monthly?.[monthIndex]?.rate) || 0;
+        factor *= 1 + rate / 100;
+    }
+    return (factor - 1) * 100;
+}
+
+function renderInflation(inflation) {
+    const table = document.querySelector('.comparison-table');
+    if (!table) return;
+    table.replaceChildren();
+
+    const months = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+    months.forEach((monthName, index) => {
+        const item = inflation.monthly[index];
+        const rateValue = item ? Number(item.rate) || 0 : 0;
+        const row = document.createElement('div');
+        row.className = 'comp-row';
+        const month = document.createElement('span');
+        month.textContent = `${monthName} ${inflation.year}`;
+        const rate = document.createElement('strong');
+        rate.textContent = item && rateValue > 0 ? `%${rateValue.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Açıklanmadı';
+        row.append(month, rate);
+        table.appendChild(row);
+    });
+
+    const cumulative = calculateJulyToDecemberCompound(inflation.monthly);
+    const row = document.createElement('div');
+    row.className = 'comp-row highlight-purple';
+    const label = document.createElement('span');
+    label.textContent = 'Temmuz-Aralık birleşik enflasyon';
+    const value = document.createElement('strong');
+    value.textContent = `%${cumulative.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    row.append(label, value);
+    table.appendChild(row);
+
+    const adjustedRow = document.createElement('div');
+    adjustedRow.className = 'comp-row';
+    const adjustedLabel = document.createElement('span');
+    adjustedLabel.textContent = 'Hesaplama oranı (birleşik enflasyon + 2 puan)';
+    const adjustedValue = document.createElement('strong');
+    adjustedValue.textContent = `%${(cumulative + 2).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    adjustedRow.append(adjustedLabel, adjustedValue);
+    table.appendChild(adjustedRow);
+}
+
 async function checkForAppUpdates() {
     if (!navigator.onLine) return;
     try {
-        const response = await fetch("https://raw.githubusercontent.com/numan067/BordroApp/main/version.json");
+        const response = await fetch('https://raw.githubusercontent.com/numan067/BordroApp/main/version.json', { cache: 'no-store' });
         if (!response.ok) return;
         const data = await response.json();
         if (compareVersions(data.version, CURRENT_VERSION)) {
             updateDownloadUrl = data.downloadUrl || updateDownloadUrl;
             showUpdateModal();
         }
-    } catch (e) {
-        console.log("Güncelleme kontrolü başarısız:", e);
+    } catch (error) {
+        console.log('Güncelleme kontrolü başarısız:', error);
     }
 }
 
-// SÜRÜM KIYASLAYICI
 function compareVersions(remote, local) {
     const rParts = remote.split('.').map(Number);
     const lParts = local.split('.').map(Number);
@@ -144,7 +172,6 @@ function compareVersions(remote, local) {
     }
     return false;
 }
-
 function showUpdateModal() {
     const modal = document.getElementById('update-modal');
     if (modal) modal.classList.remove('hidden');
@@ -153,28 +180,21 @@ function closeUpdateModal() {
     const modal = document.getElementById('update-modal');
     if (modal) modal.classList.add('hidden');
 }
-function redirectToUpdate() {
-    window.open(updateDownloadUrl, "_blank");
-}
+function redirectToUpdate() { window.open(updateDownloadUrl, '_blank'); }
 
-// Seçilen aya göre çalışma saatini otomatik güncelle (ay gün sayısı × 7,5).
 function autoSetCumulativeAndCalculate() {
     const month = Number.parseInt(document.getElementById('calc-month').value, 10);
     const hoursInput = document.getElementById('monthly-hours');
     const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    const days = monthDays[Math.max(0, Math.min(11, month - 1))];
-    hoursInput.value = days * 7.5;
+    hoursInput.value = monthDays[Math.max(0, Math.min(11, month - 1))] * 7.5;
     updateExemptionAndCalculate();
 }
-
-// Ay değişince vergi istisnası göstergesini de yenile.
 function updateExemptionAndCalculate() {
     const month = getSelectedMonthValues();
     document.getElementById('ind-exemption').innerText = formatRawTL(month.incomeTaxExemption + month.stampTaxExemption);
     calculateBordro();
 }
 
-// Bordro hesaplaması
 function calculateBordro() {
     const month = getSelectedMonthValues();
     const taxRate = (Number.parseFloat(document.getElementById('tax-bracket').value) || 0) / 100;
@@ -190,13 +210,9 @@ function calculateBordro() {
     const transportGross = Number.parseFloat(document.getElementById('transport-gross').value) || 0;
 
     const baseGross = hourlyRate * monthlyHours;
-    const overtimeGross =
-        ((overtimeHours + nationalHolidayHours) * hourlyRate * 2.0) +
-        (religiousHolidayHours * hourlyRate * 2.5) +
-        (officialHolidayHours * hourlyRate * 3.0);
-    const nightGross = nightHours * 30.0;
-    const gross = baseGross + overtimeGross + nightGross + transportGross;
-
+    const overtimeGross = ((overtimeHours + nationalHolidayHours) * hourlyRate * 2.0) +
+        (religiousHolidayHours * hourlyRate * 2.5) + (officialHolidayHours * hourlyRate * 3.0);
+    const gross = baseGross + overtimeGross + nightHours * 30.0 + transportGross;
     const sgk = gross * 0.14;
     const unemployment = gross * 0.01;
     const unionDeduction = hourlyRate * 7.0;
@@ -207,13 +223,7 @@ function calculateBordro() {
     const netSalary = gross - sgk - unemployment - incomeTax - stampTax - unionDeduction - vakifNet - besDeduction;
 
     const bonusGross = hourlyRate * 30.0 * 7.5;
-    const bonusSgk = bonusGross * 0.14;
-    const bonusUnemployment = bonusGross * 0.01;
-    const bonusTaxBase = bonusGross - bonusSgk - bonusUnemployment;
-    const bonusIncomeTax = bonusTaxBase * taxRate;
-    const bonusStampTax = bonusGross * 0.00759;
-    const netBonus = bonusGross - bonusSgk - bonusUnemployment - bonusIncomeTax - bonusStampTax;
-
+    const netBonus = bonusGross - bonusGross * 0.14 - bonusGross * 0.01 - (bonusGross - bonusGross * 0.15) * taxRate - bonusGross * 0.00759;
     document.getElementById('ind-exemption').innerText = formatRawTL(month.incomeTaxExemption + month.stampTaxExemption);
     document.getElementById('ind-union').innerText = formatRawTL(unionDeduction);
     document.getElementById('ind-vakif').innerText = formatRawTL(vakifNet);
@@ -221,34 +231,77 @@ function calculateBordro() {
     document.getElementById('res-net-salary').innerText = formatTL(netSalary);
 }
 
-// ENFLASYON SAAT ÜCRETİ HESABI
 function calculateHourlyInflation() {
-    const hourlyRate = parseFloat(document.getElementById('hourly-rate-input').value) || 0;
-    if (hourlyRate <= 0) {
-        document.getElementById('res-new-hourly').innerText = "0,00 TL";
-        document.getElementById('res-hourly-diff').innerText = "+ 0,00 TL";
-        return;
-    }
-    const hourlyIncrease = hourlyRate * configuredInflationRate / 100;
-    const newHourlyRate = hourlyRate + hourlyIncrease;
-    document.getElementById('res-new-hourly').innerText = formatTL(newHourlyRate);
-    document.getElementById('res-hourly-diff').innerText = "+ " + formatTL(hourlyIncrease);
+    const hourlyRate = Number.parseFloat(document.getElementById('hourly-rate-input').value) || 0;
+    const adjustedPercent = calculateJulyToDecemberCompound(inflationMonthlyRates) + 2;
+    const increase = hourlyRate * adjustedPercent / 100;
+    document.getElementById('res-new-hourly').innerText = hourlyRate > 0 ? formatTL(hourlyRate + increase) : '0,00 TL';
+    document.getElementById('res-hourly-diff').innerText = '+ ' + (hourlyRate > 0 ? formatTL(increase) : '0,00 TL');
 }
 
-// GERİ BİLDİRİMİ SADECE SAYFA İÇİ LİSTEDE BİRİKTİRME (MAİL GÖNDERME YOK)
-function sendMessageLocally() {
-    const textNode = document.getElementById('chat-textarea');
-    const msgList = document.getElementById('message-list');
-    const noMsgText = document.getElementById('no-msg-text');
-    const message = textNode.value.trim();
-    if (!message) return;
-    if (noMsgText) noMsgText.style.display = 'none';
-    const msgBubble = document.createElement('div');
-    msgBubble.className = 'single-message-node';
-    const label = document.createElement('strong');
-    label.textContent = 'Gönderildi: ';
-    msgBubble.append(label, document.createTextNode(message));
-    msgList.appendChild(msgBubble);
-    msgList.scrollTop = msgList.scrollHeight;
-    textNode.value = '';
+async function loadPublicMessages() {
+    const list = document.getElementById('message-list');
+    if (!list) return;
+    try {
+        const response = await fetch(PUBLIC_MESSAGES_URL, { cache: 'no-store' });
+        if (!response.ok) throw new Error('Mesajlar yüklenemedi.');
+        const data = await response.json();
+        renderPublicMessages(Array.isArray(data.messages) ? data.messages : []);
+    } catch (error) {
+        console.warn('Ortak mesajlar alınamadı:', error);
+        list.innerHTML = '<p class="no-messages">Mesajlar şu anda alınamıyor. Bağlantınızı kontrol edip yeniden deneyin.</p>';
+    }
 }
+
+function renderPublicMessages(messages) {
+    const list = document.getElementById('message-list');
+    if (!list) return;
+    list.replaceChildren();
+    if (!messages.length) {
+        const empty = document.createElement('p');
+        empty.className = 'no-messages';
+        empty.textContent = 'Henüz mesaj yok.';
+        list.appendChild(empty);
+        return;
+    }
+    messages.forEach(message => {
+        const item = document.createElement('div');
+        item.className = 'single-message-node';
+        const name = document.createElement('strong');
+        name.textContent = `${message.name || 'Ziyaretçi'} · `;
+        const text = document.createElement('span');
+        text.textContent = message.text || '';
+        const date = document.createElement('small');
+        date.textContent = message.createdAt ? ` · ${new Date(message.createdAt).toLocaleString('tr-TR')}` : '';
+        item.append(name, text, date);
+        list.appendChild(item);
+    });
+}
+
+async function sendMessageLocally() {
+    const input = document.getElementById('chat-textarea');
+    const button = document.querySelector('#tab-messages button[onclick="sendMessageLocally()"]');
+    const text = input.value.trim();
+    if (!text) return;
+    if (text.length > 500) { alert('Mesaj en fazla 500 karakter olabilir.'); return; }
+    if (button) button.disabled = true;
+    try {
+        const response = await fetch(PUBLIC_MESSAGES_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Mesaj gönderilemedi.');
+        input.value = '';
+        await loadPublicMessages();
+    } catch (error) {
+        alert(error.message || 'Mesaj gönderilemedi. Lütfen daha sonra tekrar deneyin.');
+    } finally {
+        if (button) button.disabled = false;
+    }
+}
+
+function sendMessageLocallyPlaceholder() {}
+
+function calculateHourlyInflationOnContentRefresh() { calculateHourlyInflation(); }

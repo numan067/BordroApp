@@ -4,25 +4,8 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-
-    <!-- Bordro belgesi -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M34,18h26l18,18v42c0,5.5 -4.5,10 -10,10H34c-5.5,0 -10,-4.5 -10,-10V28c0,-5.5 4.5,-10 10,-10z" />
-    <path
-        android:fillColor="#DDD6FE"
-        android:pathData="M60,18v13c0,3.3 2.7,6 6,6h12z" />
-
-    <!-- Bordro satırları -->
-    <path android:fillColor="#7C3AED" android:pathData="M35,43h23v4H35z" />
-    <path android:fillColor="#C4B5FD" android:pathData="M35,52h31v3H35z" />
-    <path android:fillColor="#C4B5FD" android:pathData="M35,60h22v3H35z" />
-
-    <!-- Net ödeme simgesi -->
-    <path
-        android:fillColor="#16A34A"
-        android:pathData="M65,61a13,13 0,1 0,0 26a13,13 0,1 0,0 -26z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M63,76l-4,-4l-2.5,2.5l6.5,6.5l11,-11l-2.5,-2.5z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M0,0h108v108h-108z" />
+    <path android:fillColor="#0A84D8" android:pathData="M12,66 L26,48 L40,66 L33,66 L33,91 L19,91 L19,66 Z" />
+    <path android:fillColor="#0F9AD9" android:pathData="M36,55 L53,34 L70,55 L62,55 L62,91 L44,91 L44,55 Z" />
+    <path android:fillColor="#20C6EB" android:pathData="M64,43 L82,20 L100,43 L92,43 L92,91 L72,91 L72,43 Z" />
 </vector>
